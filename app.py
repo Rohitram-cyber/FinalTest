@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, send_from_directory
 import csv
 import os
 from werkzeug.utils import secure_filename
@@ -21,8 +21,10 @@ CSV_FILE = "reports.csv"
 if not os.path.exists(CSV_FILE):
     with open(CSV_FILE, mode="w", newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["Full Name", "Email", "Date", "Time", "Shift", "Department",
-                         "Report Type", "Location", "Sub-location", "Hazard Description", "Filename"])
+        writer.writerow([
+            "Full Name", "Email", "Date", "Time", "Shift", "Department",
+            "Report Type", "Location", "Sub-location", "Hazard Description", "Filename"
+        ])
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -33,7 +35,6 @@ def index():
         uploaded_file = request.files.get("file")
         filename = ""
 
-        # Save file if present and allowed
         if uploaded_file and allowed_file(uploaded_file.filename):
             filename = secure_filename(uploaded_file.filename)
             uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -60,7 +61,6 @@ def index():
 
     return render_template("index.html")
 
-
 @app.route("/reports")
 def show_reports():
     with open(CSV_FILE, mode="r") as file:
@@ -72,16 +72,11 @@ def show_reports():
 
 @app.route("/download-excel")
 def download_excel():
-    csv_path = CSV_FILE
-    excel_path = "reports.xlsx"
-
     try:
-        # Convert CSV to Excel
-        df = pd.read_csv(csv_path)
-        df.to_excel(excel_path, index=False)
-
+        df = pd.read_csv(CSV_FILE)
+        df.to_excel("reports.xlsx", index=False)
         return send_file(
-            excel_path,
+            "reports.xlsx",
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             as_attachment=True,
             download_name="Hazard_Reports.xlsx"
@@ -89,13 +84,9 @@ def download_excel():
     except Exception as e:
         return f"Error generating Excel file: {str(e)}"
 
-# Serve uploaded files (for report view/download)
-from flask import send_from_directory
-
 @app.route("/uploads/<filename>")
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
