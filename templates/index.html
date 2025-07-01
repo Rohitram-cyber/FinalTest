@@ -1,134 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Safety Hazard Reporting Form</title>
+    <link rel="stylesheet" href="/static/style.css">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            padding: 40px;
+            background-color: #f2f2f2;
+            padding: 30px;
         }
-
-        h2 {
+        h1 {
             color: #333;
         }
-
         form {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 600px;
             margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-
         label {
-            display: block;
-            margin-top: 15px;
             font-weight: bold;
         }
-
         input, select, textarea {
             width: 100%;
+            margin: 8px 0 20px 0;
             padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            box-sizing: border-box;
         }
-
-        textarea {
-            height: 100px;
-        }
-
         button {
-            margin-top: 20px;
-            padding: 12px 20px;
-            background: #28a745;
-            color: white;
+            padding: 10px 15px;
+            background-color: #28a745;
             border: none;
+            color: white;
             border-radius: 5px;
-            font-size: 16px;
             cursor: pointer;
         }
-
         button:hover {
-            background: #218838;
-        }
-
-        .footer-link {
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        .footer-link a {
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .footer-link a:hover {
-            text-decoration: underline;
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
 
-    <h2>Safety Hazard Reporting - Ganua Mines</h2>
+<h1>Safety Hazard / Nearmiss / Incident Reporting</h1>
 
-    <form action="/" method="POST">
-        <label for="fullname">Full Name *</label>
-        <input type="text" id="fullname" name="fullname" required>
+<form action="/" method="POST" enctype="multipart/form-data">
+    <label for="fullname">Full Name*</label>
+    <input type="text" name="fullname" required>
 
-        <label for="email">Email ID (optional)</label>
-        <input type="email" id="email" name="email">
+    <label for="email">Email ID</label>
+    <input type="email" name="email">
 
-        <label for="date">Date</label>
-        <input type="date" id="date" name="date" required>
+    <label for="date">Date</label>
+    <input type="date" name="date">
 
-        <label for="time">Time</label>
-        <input type="time" id="time" name="time" required>
+    <label for="time">Time</label>
+    <input type="time" name="time">
 
-        <label for="shift">Shift Details</label>
-        <select id="shift" name="shift" required>
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="G">G</option>
-        </select>
+    <label for="shift">Shift Details</label>
+    <select name="shift">
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="G">G</option>
+    </select>
 
-        <label for="department">Department</label>
-        <select id="department" name="department" required>
-            <option value="Operation">Operation</option>
-            <option value="IT">IT</option>
-            <option value="HR">HR</option>
-            <option value="Admin">Admin</option>
-            <option value="Security">Security</option>
-            <option value="Logistics">Logistics</option>
-            <option value="Geology">Geology</option>
-        </select>
+    <label for="department">Department</label>
+    <select name="department">
+        <option value="Operation">Operation</option>
+        <option value="IT">IT</option>
+        <option value="HR">HR</option>
+        <option value="Admin">Admin</option>
+        <option value="Security">Security</option>
+        <option value="Logistics">Logistics</option>
+        <option value="Geology">Geology</option>
+    </select>
 
-        <label for="report_type">Report Type</label>
-        <select id="report_type" name="report_type" required>
-            <option value="Hazard">Hazard</option>
-            <option value="Nearmiss">Nearmiss</option>
-            <option value="Incident">Incident</option>
-        </select>
+    <label for="report_type">Report Type</label>
+    <select name="report_type">
+        <option value="Hazard">Hazard</option>
+        <option value="Nearmiss">Nearmiss</option>
+        <option value="Incident">Incident</option>
+    </select>
 
-        <label for="location">Location</label>
-        <input type="text" id="location" name="location" value="Ganua Iron Ore Mines" required>
+    <label for="location">Location</label>
+    <input type="text" name="location" value="Ganua Iron Ore Mines">
 
-        <label for="sublocation">Sub-location</label>
-        <input type="text" id="sublocation" name="sublocation" required>
+    <label for="sublocation">Sub-location</label>
+    <input type="text" name="sublocation">
 
-        <label for="description">Hazard Description</label>
-        <textarea id="description" name="description" required></textarea>
+    <label for="description">Hazard Description</label>
+    <textarea name="description" rows="4" required></textarea>
 
-        <button type="submit">Submit Report</button>
-    </form>
+    <label for="file">Upload Attachment</label>
+    <input type="file" name="file">
 
-    <div class="footer-link">
-        <p><a href="/reports">View Submitted Reports</a></p>
-    </div>
+    <button type="submit">Submit Report</button>
+</form>
 
 </body>
 </html>
