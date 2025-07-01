@@ -12,6 +12,23 @@
             color: #333;
             text-align: center;
         }
+        .download-btn {
+            display: block;
+            width: fit-content;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .download-btn button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .download-btn button:hover {
+            background-color: #0056b3;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -37,6 +54,12 @@
 <body>
 
 <h1>Submitted Reports</h1>
+
+<div class="download-btn">
+    <a href="/download-excel" download>
+        <button>⬇️ Download Excel</button>
+    </a>
+</div>
 
 <table>
     <thead>
