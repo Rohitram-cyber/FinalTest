@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 import csv
 import os
 from werkzeug.utils import secure_filename
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -68,6 +69,24 @@ def show_reports():
         headers = rows[0]
         data = rows[1:]
     return render_template("reports.html", headers=headers, data=data)
+
+
+@app.route("/download-excel")
+def download_excel():
+    csv_path = CSV_FILE
+    excel_path = "reports.xlsx"
+
+    # Convert CSV to Excel
+    df = pd.read_csv(csv_path)
+    df.to_excel(excel_path, index=False)
+
+    return send_file(excel_path, as_attachment=True)
+
+
+# Serve uploaded files (for report view/download)
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_file(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
 
 if __name__ == "__main__":
