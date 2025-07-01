@@ -46,7 +46,7 @@
 
 <h1>Safety Hazard / Nearmiss / Incident Reporting</h1>
 
-<form action="/" method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" onsubmit="return disableButton(this);">
     <label for="fullname">Full Name*</label>
     <input type="text" name="fullname" required>
 
@@ -99,6 +99,12 @@
 
     <button type="submit">Submit Report</button>
 </form>
+    <script>
+  function disableButton(form) {
+    form.querySelector("button[type='submit']").disabled = true;
+    return true;
+  }
+</script>
 
 </body>
 </html>
