@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request
 import csv
 import os
 
 app = Flask(__name__)
 
-# Ensure the CSV file exists with headers
-if not os.path.exists("reports.csv"):
-    with open("reports.csv", mode="w", newline='') as file:
+CSV_FILE = "reports.csv"
+
+# Ensure CSV exists with headers
+if not os.path.exists(CSV_FILE):
+    with open(CSV_FILE, mode="w", newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["Full Name", "Email", "Date", "Time", "Shift", "Department",
                          "Report Type", "Location", "Sub-location", "Hazard Description"])
@@ -26,14 +28,25 @@ def index():
             request.form.get("sublocation"),
             request.form.get("description"),
         ]
-        
-        with open("reports.csv", mode="a", newline='') as file:
+
+        with open(CSV_FILE, mode="a", newline='') as file:
             writer = csv.writer(file)
             writer.writerow(data)
 
         return "✅ Report submitted successfully! <br><a href='/'>Back to form</a>"
 
     return render_template("index.html")
+
+
+@app.route("/reports")
+def show_reports():
+    with open(CSV_FILE, mode="r") as file:
+        reader = csv.reader(file)
+        rows = list(reader)
+        headers = rows[0]
+        data = rows[1:]
+    return render_template("reports.html", headers=headers, data=data)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
