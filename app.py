@@ -1,80 +1,44 @@
-from flask import Flask, render_template, request, redirect, send_from_directory
-import sqlite3, os
+from flask import Flask, render_template, request, redirect, flash
+import os
 from werkzeug.utils import secure_filename
+from datetime import datetime
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app.secret_key = 'supersecretkey'
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Ensure upload folder exists
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
-def init_db():
-    conn = sqlite3.connect('hazards.db')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS hazards (
-            full_name TEXT,
-            email TEXT,
-            date TEXT,
-            time TEXT,
-            shift TEXT,
-            department TEXT,
-            report_type TEXT,
-            responsible_person TEXT,
-            location TEXT,
-            sub_location TEXT,
-            description TEXT,
-            filename TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    conn = sqlite3.connect('hazards.db')
-    reports = conn.execute('SELECT * FROM hazards').fetchall()
-    conn.close()
-    return render_template('index.html', reports=reports)
+    if request.method == 'POST':
+        full_name = request.form.get('full_name')
+        email = request.form.get('email')
+        date = request.form.get('date')
+        time = request.form.get('time')
+        shift = request.form.get('shift')
+        department = request.form.get('department')
+        report_type = request.form.get('report_type')
+        location = request.form.get('location')
+        sub_location = request.form.get('sub_location')
+        description = request.form.get('description')
 
-@app.route('/report', methods=['POST'])
-def report():
-    file = request.files['file']
-    if not file or file.filename == '':
-        return "File upload is required.", 400
+        if not full_name:
+            flash('Full Name is required!', 'danger')
+            return redirect('/')
 
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file = request.files.get('file')
+        filename = ''
+        if file and file.filename != '':
+            filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-    data = (
-        request.form['full_name'],
-        request.form.get('email', ''),
-        request.form['date'],
-        request.form['time'],
-        request.form['shift'],
-        request.form['department'],
-        request.form['report_type'],
-        request.form['responsible_person'],
-        request.form['location'],
-        request.form['sub_location'],
-        request.form['description'],
-        filename
-    )
+        flash('Hazard report submitted successfully!', 'success')
+        return redirect('/')
 
-    conn = sqlite3.connect('hazards.db')
-    conn.execute('''
-        INSERT INTO hazards (
-            full_name, email, date, time, shift, department, report_type,
-            responsible_person, location, sub_location, description, filename
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', data)
-    conn.commit()
-    conn.close()
-    return redirect('/')
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    return render_template("index.html")
 
 if __name__ == '__main__':
-    init_db()
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=10000)  # Important for Render
