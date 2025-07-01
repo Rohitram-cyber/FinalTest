@@ -1,63 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Submitted Safety Reports</title>
+    <title>Submitted Reports</title>
     <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
         body {
             font-family: Arial, sans-serif;
-            margin: 40px;
+            padding: 30px;
+            background-color: #f9f9f9;
         }
-
-        h2 {
+        h1 {
             color: #333;
+            text-align: center;
         }
-
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+        th, td {
+            border: 1px solid #aaa;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f1f1f1;
+        }
         a {
-            text-decoration: none;
             color: #007bff;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <h2>All Submitted Safety Hazard Reports</h2>
-    <a href="/">← Back to Form</a>
-    <table>
-        <thead>
-            <tr>
-                {% for header in headers %}
-                    <th>{{ header }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-                <tr>
-                    {% for cell in row %}
-                        <td>{{ cell }}</td>
-                    {% endfor %}
-                </tr>
+
+<h1>Submitted Reports</h1>
+
+<table>
+    <thead>
+        <tr>
+            {% for header in headers %}
+                <th>{{ header }}</th>
             {% endfor %}
-        </tbody>
-    </table>
+            <th>Attachment</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+            <tr>
+                {% for item in row %}
+                    <td>{{ item }}</td>
+                {% endfor %}
+                <td>
+                    {% if row|length > headers|length %}
+                        {% set filename = row[headers|length] %}
+                        {% if filename %}
+                            <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a>
+                        {% else %}
+                            No file
+                        {% endif %}
+                    {% else %}
+                        No file
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 </body>
 </html>
