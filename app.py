@@ -23,7 +23,7 @@ if not os.path.exists(CSV_FILE):
         writer = csv.writer(file)
         writer.writerow([
             "Full Name", "Email", "Date", "Time", "Shift", "Department",
-            "Report Type", "Location", "Sub-location", "Hazard Description", "Filename"
+            "Report Type", "Responsible Person", "Location", "Sub-location", "Hazard Description", "Filename"
         ])
 
 def allowed_file(filename):
@@ -47,6 +47,7 @@ def index():
             request.form.get("shift"),
             request.form.get("department"),
             request.form.get("report_type"),
+            request.form.get("responsible")
             request.form.get("location"),
             request.form.get("sublocation"),
             request.form.get("description"),
