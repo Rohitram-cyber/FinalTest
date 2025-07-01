@@ -1,4 +1,4 @@
 Full Name,Email,Date,Time,Shift,Department,Report Type,Location,Sub-location,Hazard Description,Filename
-with open(CSV_FILE, mode="a", newline='') as file:
+with open(CSV_FILE, mode=a, newline='') as file:
     writer = csv.writer(file)
     writer.writerow(data)
