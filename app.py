@@ -70,18 +70,24 @@ def show_reports():
         data = rows[1:]
     return render_template("reports.html", headers=headers, data=data)
 
-
 @app.route("/download-excel")
 def download_excel():
     csv_path = CSV_FILE
     excel_path = "reports.xlsx"
 
-    # Convert CSV to Excel
-    df = pd.read_csv(csv_path)
-    df.to_excel(excel_path, index=False)
+    try:
+        # Convert CSV to Excel
+        df = pd.read_csv(csv_path)
+        df.to_excel(excel_path, index=False)
 
-    return send_file(excel_path, as_attachment=True)
-
+        return send_file(
+            excel_path,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            as_attachment=True,
+            download_name="Hazard_Reports.xlsx"
+        )
+    except Exception as e:
+        return f"Error generating Excel file: {str(e)}"
 
 # Serve uploaded files (for report view/download)
 from flask import send_from_directory
