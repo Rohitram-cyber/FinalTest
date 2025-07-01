@@ -48,5 +48,7 @@ def show_reports():
     return render_template("reports.html", headers=headers, data=data)
 
 
+# Final correct run block for Render deployment
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
