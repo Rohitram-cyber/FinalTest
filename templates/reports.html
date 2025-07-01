@@ -77,13 +77,9 @@
                     <td>{{ item }}</td>
                 {% endfor %}
                 <td>
-                    {% if row|length > headers|length %}
-                        {% set filename = row[headers|length] %}
-                        {% if filename %}
-                            <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a>
-                        {% else %}
-                            No file
-                        {% endif %}
+                    {% set filename = row[-1] %}
+                    {% if filename %}
+                        <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a>
                     {% else %}
                         No file
                     {% endif %}
