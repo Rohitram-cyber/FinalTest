@@ -1,44 +1,39 @@
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect
+import csv
 import os
-from werkzeug.utils import secure_filename
-from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
-UPLOAD_FOLDER = 'static/uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+# Ensure the CSV file exists with headers
+if not os.path.exists("reports.csv"):
+    with open("reports.csv", mode="w", newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Full Name", "Email", "Date", "Time", "Shift", "Department",
+                         "Report Type", "Location", "Sub-location", "Hazard Description"])
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route("/", methods=["GET", "POST"])
 def index():
-    if request.method == 'POST':
-        full_name = request.form.get('full_name')
-        email = request.form.get('email')
-        date = request.form.get('date')
-        time = request.form.get('time')
-        shift = request.form.get('shift')
-        department = request.form.get('department')
-        report_type = request.form.get('report_type')
-        location = request.form.get('location')
-        sub_location = request.form.get('sub_location')
-        description = request.form.get('description')
+    if request.method == "POST":
+        data = [
+            request.form.get("fullname"),
+            request.form.get("email"),
+            request.form.get("date"),
+            request.form.get("time"),
+            request.form.get("shift"),
+            request.form.get("department"),
+            request.form.get("report_type"),
+            request.form.get("location"),
+            request.form.get("sublocation"),
+            request.form.get("description"),
+        ]
+        
+        with open("reports.csv", mode="a", newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(data)
 
-        if not full_name:
-            flash('Full Name is required!', 'danger')
-            return redirect('/')
-
-        file = request.files.get('file')
-        filename = ''
-        if file and file.filename != '':
-            filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-        flash('Hazard report submitted successfully!', 'success')
-        return redirect('/')
+        return "✅ Report submitted successfully! <br><a href='/'>Back to form</a>"
 
     return render_template("index.html")
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)  # Important for Render
+if __name__ == "__main__":
+    app.run(debug=True)
