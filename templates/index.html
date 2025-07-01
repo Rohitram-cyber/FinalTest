@@ -1,63 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Submitted Safety Reports</title>
+    <meta charset="UTF-8">
+    <title>Safety Hazard Reporting Form</title>
     <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
         body {
             font-family: Arial, sans-serif;
-            margin: 40px;
+            background: #f4f4f4;
+            padding: 40px;
         }
 
         h2 {
             color: #333;
         }
 
-        a {
+        form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        .footer-link {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .footer-link a {
             text-decoration: none;
             color: #007bff;
+        }
+
+        .footer-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <h2>All Submitted Safety Hazard Reports</h2>
-    <a href="/">← Back to Form</a>
-    <table>
-        <thead>
-            <tr>
-                {% for header in headers %}
-                    <th>{{ header }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-                <tr>
-                    {% for cell in row %}
-                        <td>{{ cell }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+    <h2>Safety Hazard Reporting - Ganua Mines</h2>
+
+    <form action="/" method="POST">
+        <label for="fullname">Full Name *</label>
+        <input type="text" id="fullname" name="fullname" required>
+
+        <label for="email">Email ID (optional)</label>
+        <input type="email" id="email" name="email">
+
+        <label for="date">Date</label>
+        <input type="date" id="date" name="date" required>
+
+        <label for="time">Time</label>
+        <input type="time" id="time" name="time" required>
+
+        <label for="shift">Shift Details</label>
+        <select id="shift" name="shift" required>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="G">G</option>
+        </select>
+
+        <label for="department">Department</label>
+        <select id="department" name="department" required>
+            <option value="Operation">Operation</option>
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Admin">Admin</option>
+            <option value="Security">Security</option>
+            <option value="Logistics">Logistics</option>
+            <option value="Geology">Geology</option>
+        </select>
+
+        <label for="report_type">Report Type</label>
+        <select id="report_type" name="report_type" required>
+            <option value="Hazard">Hazard</option>
+            <option value="Nearmiss">Nearmiss</option>
+            <option value="Incident">Incident</option>
+        </select>
+
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" value="Ganua Iron Ore Mines" required>
+
+        <label for="sublocation">Sub-location</label>
+        <input type="text" id="sublocation" name="sublocation" required>
+
+        <label for="description">Hazard Description</label>
+        <textarea id="description" name="description" required></textarea>
+
+        <button type="submit">Submit Report</button>
+    </form>
+
+    <div class="footer-link">
+        <p><a href="/reports">View Submitted Reports</a></p>
+    </div>
+
 </body>
 </html>
