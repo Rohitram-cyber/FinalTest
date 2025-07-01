@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Safety Hazard Report</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>Safety Hazard Reporting – Ganua Iron Ore Mines</h1>
+
+  <form action="/report" method="POST" enctype="multipart/form-data">
+    <input type="text" name="full_name" placeholder="Full Name" required>
+    <input type="email" name="email" placeholder="Email ID (optional)">
+    <input type="date" name="date" required>
+    <input type="time" name="time" required>
+
+    <label>Shift:</label>
+    <select name="shift" required>
+      <option>A</option><option>B</option><option>C</option><option>G</option>
+    </select>
+
+    <label>Department:</label>
+    <select name="department" required>
+      <option>Operation</option>
+      <option>IT</option>
+      <option>HR</option>
+      <option>Admin</option>
+      <option>Security</option>
+      <option>Logistics</option>
+      <option>Geology</option>
+    </select>
+
+    <label>Report Type:</label>
+    <select name="report_type" required>
+      <option>Hazard</option>
+      <option>Nearmiss</option>
+      <option>Incident</option>
+    </select>
+
+    <label>Responsible Person:</label>
+    <select name="responsible_person" required>
+      <option>Sanjay Choudhary - Operation</option>
+      <option>Dikshit Das - Geology</option>
+      <option>Arpan Mishra - Admin</option>
+      <option>Mihir Purohit - HR</option>
+    </select>
+
+    <input type="text" name="location" value="Ganua Iron Ore Mines" readonly>
+    <input type="text" name="sub_location" placeholder="Sub-location" required>
+    <textarea name="description" placeholder="Hazard Description" rows="4" required></textarea>
+
+    <label>Upload File (PDF/image):</label>
+    <input type="file" name="file" accept=".jpg,.jpeg,.png,.pdf" required>
+
+    <button type="submit">Submit Report</button>
+  </form>
+
+  <h2>All Submitted Reports</h2>
+  <table>
+    <tr>
+      <th>Name</th><th>Shift</th><th>Dept</th><th>Type</th><th>Person</th><th>Location</th><th>Description</th><th>File</th>
+    </tr>
+    {% for r in reports %}
+    <tr>
+      <td data-label="Full Name">{{ r[0] }}</td>
+      <td data-label="Shift">{{ r[4] }}</td>
+      <td data-label="Department">{{ r[5] }}</td>
+      <td data-label="Type">{{ r[6] }}</td>
+      <td data-label="Person">{{ r[7] }}</td>
+      <td data-label="Location">{{ r[8] }} - {{ r[9] }}</td>
+      <td data-label="Description">{{ r[10] }}</td>
+      <td data-label="File"><a href="/uploads/{{ r[11] }}" target="_blank">View</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
