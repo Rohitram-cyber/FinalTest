@@ -38,6 +38,7 @@ def index():
         if uploaded_file and allowed_file(uploaded_file.filename):
             filename = secure_filename(uploaded_file.filename)
             uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            print("Saved file:", filename)
 
         data = [
             request.form.get("fullname"),
@@ -47,7 +48,7 @@ def index():
             request.form.get("shift"),
             request.form.get("department"),
             request.form.get("report_type"),
-            request.form.get("responsible"),
+            request.form.get("responsibleperson"),
             request.form.get("location"),
             request.form.get("sublocation"),
             request.form.get("description"),
