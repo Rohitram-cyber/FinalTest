@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, send_file, send_from_directory
 import csv
 import os
+import sqlite3
+import io
 from werkzeug.utils import secure_filename
 import pandas as pd
 
@@ -26,19 +28,60 @@ if not os.path.exists(CSV_FILE):
             "Report Type", "Responsible Person", "Location", "Sub-location", "Hazard Description", "Filename"
         ])
 
+# Ensure SQLite database exists
+def init_db():
+    conn = sqlite3.connect("reports.db")
+    c = conn.cursor()
+    c.execute('''
+    CREATE TABLE IF NOT EXISTS reports (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fullname TEXT,
+        email TEXT,
+        date TEXT,
+        time TEXT,
+        shift TEXT,
+        department TEXT,
+        report_type TEXT,
+        responsible TEXT,
+        location TEXT,
+        sublocation TEXT,
+        description TEXT,
+        filename TEXT,
+        file_blob BLOB
+    )''')
+    conn.commit()
+    conn.close()
+
+init_db()
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_report_to_db(data, file_blob):
+    conn = sqlite3.connect('reports.db')
+    c = conn.cursor()
+    c.execute('''
+        INSERT INTO reports (
+            fullname, email, date, time, shift, department, report_type,
+            responsible, location, sublocation, description, filename, file_blob
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', data + [file_blob])
+    conn.commit()
+    conn.close()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
         uploaded_file = request.files.get("file")
         filename = ""
+        file_blob = None
 
         if uploaded_file and allowed_file(uploaded_file.filename):
             filename = secure_filename(uploaded_file.filename)
-            uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            print("Saved file:", filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            uploaded_file.save(file_path)
+            with open(file_path, "rb") as f:
+                file_blob = f.read()
 
         data = [
             request.form.get("fullname"),
@@ -55,9 +98,13 @@ def index():
             filename
         ]
 
+        # Save to CSV
         with open(CSV_FILE, mode="a", newline='') as file:
             writer = csv.writer(file)
             writer.writerow(data)
+
+        # Save to DB
+        save_report_to_db(data, file_blob)
 
         return "✅ Report submitted successfully! <br><a href='/'>Back to form</a>"
 
@@ -65,26 +112,43 @@ def index():
 
 @app.route("/reports")
 def show_reports():
-    with open(CSV_FILE, mode="r") as file:
-        reader = csv.reader(file)
-        rows = list(reader)
-        headers = rows[0]
-        data = rows[1:]
-    return render_template("reports.html", headers=headers, data=data)
+    conn = sqlite3.connect("reports.db")
+    c = conn.cursor()
+    c.execute("SELECT id, fullname, email, date, time, shift, department, report_type, responsible, location, sublocation, description, filename FROM reports")
+    rows = c.fetchall()
+    headers = ["ID", "Full Name", "Email", "Date", "Time", "Shift", "Department", "Report Type", "Responsible Person", "Location", "Sub-location", "Description", "Filename"]
+    conn.close()
+    return render_template("reports.html", headers=headers, data=rows)
 
 @app.route("/download-excel")
 def download_excel():
-    try:
-        df = pd.read_csv(CSV_FILE)
-        df.to_excel("reports.xlsx", index=False)
+    conn = sqlite3.connect("reports.db")
+    df = pd.read_sql_query("SELECT fullname, email, date, time, shift, department, report_type, responsible, location, sublocation, description, filename FROM reports", conn)
+    conn.close()
+    df.to_excel("reports.xlsx", index=False)
+    return send_file(
+        "reports.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        as_attachment=True,
+        download_name="Hazard_Reports.xlsx"
+    )
+
+@app.route("/download/<int:report_id>")
+def download_file(report_id):
+    conn = sqlite3.connect('reports.db')
+    c = conn.cursor()
+    c.execute("SELECT filename, file_blob FROM reports WHERE id = ?", (report_id,))
+    row = c.fetchone()
+    conn.close()
+
+    if row and row[1]:
         return send_file(
-            "reports.xlsx",
-            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            as_attachment=True,
-            download_name="Hazard_Reports.xlsx"
+            io.BytesIO(row[1]),
+            download_name=row[0],
+            as_attachment=True
         )
-    except Exception as e:
-        return f"Error generating Excel file: {str(e)}"
+    else:
+        return "File not found."
 
 @app.route("/uploads/<filename>")
 def uploaded_file(filename):
