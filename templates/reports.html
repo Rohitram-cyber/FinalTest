@@ -49,6 +49,9 @@
             color: #007bff;
             text-decoration: none;
         }
+        .attachment-links a {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -76,10 +79,13 @@
                 {% for item in row %}
                     <td>{{ item }}</td>
                 {% endfor %}
-                <td>
+                <td class="attachment-links">
+                    {% set report_id = row[0] %}
                     {% set filename = row[-1] %}
                     {% if filename %}
                         <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a>
+                        |
+                        <a href="{{ url_for('download_file', report_id=report_id) }}">Download</a>
                     {% else %}
                         No file
                     {% endif %}
