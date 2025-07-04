@@ -91,7 +91,7 @@ def index():
             request.form.get("shift"),
             request.form.get("department"),
             request.form.get("report_type"),
-            request.form.get("responsibleperson"),
+            request.form.get("responsible"),
             request.form.get("location"),
             request.form.get("sublocation"),
             request.form.get("description"),
