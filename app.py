@@ -120,7 +120,7 @@ def show_reports():
     conn.close()
     return render_template("reports.html", headers=headers, data=rows)
 
-    @app.route("/download-excel")
+@app.route("/download-excel")
 def download_excel():
     conn = sqlite3.connect("reports.db")
     df = pd.read_sql_query("""
@@ -134,15 +134,7 @@ def download_excel():
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Reports')
-
     output.seek(0)
-
-    return send_file(
-        output,
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        as_attachment=True,
-        download_name="Hazard_Reports.xlsx"  # Ensures proper extension
-    )
 
     return send_file(
         output,
