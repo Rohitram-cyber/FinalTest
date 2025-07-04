@@ -154,6 +154,10 @@ def download_file(report_id):
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+@app.route("/download-csv")
+def download_csv():
+    return send_file("reports.csv", as_attachment=True)
+
 @app.route("/download-db")
 def download_db():
     return send_file("reports.db", as_attachment=True)
