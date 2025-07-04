@@ -125,9 +125,14 @@ def download_excel():
     conn = sqlite3.connect("reports.db")
     df = pd.read_sql_query("SELECT fullname, email, date, time, shift, department, report_type, responsible, location, sublocation, description, filename FROM reports", conn)
     conn.close()
-    df.to_excel("reports.xlsx", index=False)
+
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False)
+    output.seek(0)
+
     return send_file(
-        "reports.xlsx",
+        output,
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         as_attachment=True,
         download_name="Hazard_Reports.xlsx"
