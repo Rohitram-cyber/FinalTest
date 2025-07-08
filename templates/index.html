@@ -57,13 +57,13 @@
     <input type="email" name="email">
 
     <label for="date">Date</label>
-    <input type="date" name="date">
+    <input type="date" name="date" required>
 
     <label for="time">Time</label>
-    <input type="time" name="time">
+    <input type="time" name="time" required>
 
     <label for="shift">Shift Details</label>
-    <select name="shift">
+    <select name="shift" required>
         <option value="A">A</option>
         <option value="B">B</option>
         <option value="C">C</option>
@@ -71,7 +71,7 @@
     </select>
 
     <label for="department">Department</label>
-    <select name="department">
+    <select name="department" required>
         <option value="Operation">Operation</option>
         <option value="IT">IT</option>
         <option value="HR">HR</option>
@@ -82,33 +82,53 @@
     </select>
 
     <label for="report_type">Report Type</label>
-    <select name="report_type">
+    <select name="report_type" required>
         <option value="Hazard">Hazard</option>
         <option value="Nearmiss">Nearmiss</option>
         <option value="Incident">Incident</option>
+        <option value="Other">Other</option>
     </select>
 
-    <label for="responsible">Responsible Person for Compliance of Hazard</label>
+    <label for="responsible">Responsible for Compliance of Hazard(Concern Department Head)</label>
     <select name="responsible" required>
-        <option value="Sanjay Choudhary - Operation">Sanjay Choudhary - Operation</option>
-        <option value="Dikshit Das - Geology">Dikshit Das - Geology</option>
-        <option value="Arpan Mishra - Admin">Arpan Mishra - Admin</option>
-        <option value="Jhunu Hansa - Civil">Jhunu Hansa - Civil</option>
-        <option value="Vidyut Da - Security">Vidyut Da - Security</option>
-        <option value="Tankadhar - Logistics">Tankadhar - Logistics</option>
+        <option value="Mining-Operation">Mining-Operation</option>
+        <option value="Admin">Admin</option>
+        <option value="Civil">Civil</option>
+        <option value="Security">Security</option>
+        <option value="HR & Admin">HR & Admin</option>
+        <option value="Logistics">Logistics</option>
+        <option value="IT">IT</option>
+        <option value="Electrical">Electrical</option>
+        <option value="Geology(QA&QC)">Geology(QA&QC)</option>
+        <option value="Mechanical">Mechanical</option>
+        <option value="Exploration">Exploration</option>
+        <option value="Stores">Stores</option>
+        <option value="Survey">Survey</option>
     </select>
 
     <label for="location">Location</label>
-    <input type="text" name="location" value="Ganua Iron Ore Mines" required>
+    <select name="Location" required>
+        <option value="">Nuagaon Iron Ore Mines</option>
+        <option value="">Narayanposhi Iron & Mn. Mines</option>
+        <option value="">Ganua Iron Ore Mines</option>
 
     <label for="sublocation">Sub-location</label>
-    <input type="text" name="sublocation">
+    <input type="text" name="sublocation" required>
 
     <label for="description">Hazard Description*</label>
     <textarea name="description" rows="4" required></textarea>
 
-    <label for="file">Upload Attachment</label>
-    <input type="file" name="file">
+    <label for="file">Upload Attachment (Images & PDF only)</label>
+    <input type="file" name="file" id="file" accept=".png, .jpg, .jpeg, .pdf" onchange="checkFileSize(this)">
+    <script>
+      function checkFileSize(input) {
+        const maxSizeMB = 10;
+        if (input.files[0] && input.files[0].size > maxSizeMB * 1024 * 1024) {
+          alert("⚠️ File size exceeds 10MB. Please choose a smaller file.");
+          input.value = ""; // Clear the selected File
+        }
+      }
+    </script>
 
     <button type="submit">Submit Report</button>
 </form>
