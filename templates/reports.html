@@ -13,10 +13,10 @@
             text-align: center;
         }
         .download-btn {
-            display: block;
-            width: fit-content;
-            margin: 20px auto;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         .download-btn button {
             background-color: #007bff;
@@ -71,6 +71,7 @@
                 <th>{{ header }}</th>
             {% endfor %}
             <th>Attachment</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
@@ -79,15 +80,22 @@
                 {% for item in row %}
                     <td>{{ item }}</td>
                 {% endfor %}
+                {% set report_id = row[0] %}
+                {% set filename = row[-2] %}
+                {% set status = row[-1] %}
                 <td class="attachment-links">
-                    {% set report_id = row[0] %}
-                    {% set filename = row[-1] %}
                     {% if filename %}
-                        <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a>
-                        |
+                        <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a> |
                         <a href="{{ url_for('download_file', report_id=report_id) }}">Download</a>
                     {% else %}
                         No file
+                    {% endif %}
+                </td>
+                <td>
+                    {% if status != 'Closed' %}
+                        <a href="/close/{{ report_id }}" onclick="return confirm('Are you sure to close this report?')">Close</a>
+                    {% else %}
+                        Closed
                     {% endif %}
                 </td>
             </tr>
