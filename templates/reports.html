@@ -77,8 +77,18 @@
                     <td>{{ row[i] }}</td>
                 {% endfor %}
                 <td>
+                    {% set report_id = row[0] %}
+                    {% set filename = row[-2] %}
+                    {% if filename %}
+                        <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a> |
+                        <a href="{{ url_for('download_file', report_id=report_id) }}">Download</a>
+                    {% else %}
+                        No file
+                    {% endif %}
+                </td>
+                <td>
                     {% if row[-1] != 'Closed' %}
-                        <a href="/close/{{ row[0] }}" onclick="return confirm('Are you sure to close this report?');">🔓 Open</a>
+                        <a href="/close/{{ report_id }}" onclick="return confirm('Are you sure to close this report?');">🔓 Open</a>
                     {% else %}
                         ✅ Closed
                     {% endif %}
