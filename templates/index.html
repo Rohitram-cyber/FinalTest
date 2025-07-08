@@ -57,13 +57,13 @@
     <input type="email" name="email">
 
     <label for="date">Date</label>
-    <input type="date" name="date" required>
+    <input type="date" name="date" id="date" required>
 
     <label for="time">Time</label>
-    <input type="time" name="time" required>
+    <input type="time" name="time" id="time" required>
 
     <label for="shift">Shift Details</label>
-    <select name="shift" required>
+    <select name="shift" id="shift" required>
         <option value="A">A</option>
         <option value="B">B</option>
         <option value="C">C</option>
@@ -71,7 +71,7 @@
     </select>
 
     <label for="department">Department</label>
-    <select name="department" required>
+    <select name="department" id="department" required>
         <option value="Operation">Operation</option>
         <option value="IT">IT</option>
         <option value="HR">HR</option>
@@ -82,7 +82,7 @@
     </select>
 
     <label for="report_type">Report Type</label>
-    <select name="report_type" required>
+    <select name="report_type" id="report_type" required>
         <option value="Hazard">Hazard</option>
         <option value="Nearmiss">Nearmiss</option>
         <option value="Incident">Incident</option>
@@ -90,7 +90,7 @@
     </select>
 
     <label for="responsible">Responsible for Compliance of Hazard(Concern Department Head)</label>
-    <select name="responsible" required>
+    <select name="responsible" id="responsible" required>
         <option value="Mining-Operation">Mining-Operation</option>
         <option value="Admin">Admin</option>
         <option value="Civil">Civil</option>
@@ -107,20 +107,20 @@
     </select>
 
     <label for="location">Location</label>
-    <select name="location" required>
+    <select name="location" id="location" required>
         <option value="Nuagaon Iron Ore Mines">Nuagaon Iron Ore Mines</option>
         <option value="Narayanposhi Iron & Mn. Mines">Narayanposhi Iron & Mn. Mines</option>
         <option value="Ganua Iron Ore Mines">Ganua Iron Ore Mines</option>
     </select>
 
     <label for="sublocation">Sub-location</label>
-    <input type="text" name="sublocation" required>
+    <input type="text" name="sublocation" id="sublocation" required>
 
     <label for="description">Hazard Description*</label>
     <textarea name="description" rows="4" required></textarea>
 
     <label for="file">Upload Attachment (Images & PDF only)</label>
-    <input type="file" name="file" id="file" accept=".png, .jpg, .jpeg, .pdf" onchange="checkFileSize(this)">
+    <input type="file" name="file" id="file" accept=".png, .jpg, .jpeg, .pdf" onchange="checkFileSize(this)" required>
     <script>
       function checkFileSize(input) {
         const maxSizeMB = 10;
