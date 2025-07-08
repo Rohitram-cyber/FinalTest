@@ -54,15 +54,13 @@
     <input type="text" name="fullname" required>
 
     <label for="email">Email ID</label>
-    <input type="email" name="email">
+    <input type="email" name="email" required>
 
     <label for="date">Date</label>
     <input type="date" name="date" id="date" required>
-    <option value="" disabled selected>Select Date</option>
 
     <label for="time">Time</label>
     <input type="time" name="time" id="time" required>
-    <option value="" disabled selected>Select Time</option>
 
     <label for="shift">Shift Details</label>
     <select name="shift" id="shift" required>
@@ -94,7 +92,7 @@
         <option value="Other">Other</option>
     </select>
 
-    <label for="responsible">Responsible for Compliance of Hazard(Concern Department Head)</label>
+    <label for="responsible">Responsible for Compliance of Hazard (Concern Department Head)</label>
     <select name="responsible" id="responsible" required>
         <option value="" disabled selected>Select Concern Department</option>
         <option value="Mining-Operation">Mining-Operation</option>
@@ -114,7 +112,7 @@
 
     <label for="location">Location</label>
     <select name="location" id="location" required>
-        <option value="" disabled selected>Select location</option>
+        <option value="" disabled selected>Select Location</option>
         <option value="Nuagaon Iron Ore Mines">Nuagaon Iron Ore Mines</option>
         <option value="Narayanposhi Iron & Mn. Mines">Narayanposhi Iron & Mn. Mines</option>
         <option value="Ganua Iron Ore Mines">Ganua Iron Ore Mines</option>
@@ -122,19 +120,19 @@
 
     <label for="sublocation">Sub-Location</label>
     <input type="text" name="sublocation" id="sublocation" required>
-    <option value="" disabled selected>Select Sub-Location</option>
 
     <label for="description">Hazard Description*</label>
     <textarea name="description" rows="4" required></textarea>
 
     <label for="file">Upload Attachment (Images & PDF only)</label>
     <input type="file" name="file" id="file" accept=".png, .jpg, .jpeg, .pdf" onchange="checkFileSize(this)" required>
+
     <script>
       function checkFileSize(input) {
         const maxSizeMB = 10;
         if (input.files[0] && input.files[0].size > maxSizeMB * 1024 * 1024) {
           alert("⚠️ File size exceeds 10MB. Please choose a smaller file.");
-          input.value = ""; // Clear the selected File
+          input.value = ""; // Clear the selected file
         }
       }
     </script>
