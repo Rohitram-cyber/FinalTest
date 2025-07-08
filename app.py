@@ -117,7 +117,7 @@ def show_reports():
     c = conn.cursor()
     c.execute("SELECT id, fullname, email, date, time, shift, department, report_type, responsible, location, sublocation, description, filename, status FROM reports")
     rows = c.fetchall()
-    headers = ["ID", "Full Name", "Email", "Date", "Time", "Shift", "Department", "Report Type", "Responsible Person", "Location", "Sub-location", "Description", "Filename", "Status"]
+    headers = ["ID", "Full Name", "Email", "Date", "Time", "Shift", "Department", "Report Type", "Responsible Person for Compliance of Hazard", "Location", "Sub-location", "Description", "Attachment", "Status"]
     conn.close()
     return render_template("reports.html", headers=headers, data=rows)
 
