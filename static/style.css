@@ -1,117 +1,29 @@
-* {
-  box-sizing: border-box;
-}
-
+/* style.css */
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
-  margin: 0;
+  background-color: #f4f4f4;
   padding: 20px;
-  background: #f4f4f4;
 }
 
 h1 {
   text-align: center;
-  color: green;
+  color: green;  /* ✅ This makes the header green */
 }
 
+/* Additional form styles... */
 form {
   background: #fff;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
   max-width: 600px;
-  margin: 0 auto 30px auto;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-form input,
-form select,
-form textarea {
+input, select, textarea {
   width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-}
-
-form button {
-  background: #007BFF;
-  color: white;
-  padding: 12px;
-  width: 100%;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-form button:hover {
-  background: #0056b3;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
-}
-
-th, td {
-  text-align: left;
   padding: 10px;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-}
-
-th {
-  background: #007BFF;
-  color: white;
-}
-
-td a {
-  color: #007BFF;
-  text-decoration: underline;
-}
-
-@media screen and (max-width: 768px) {
-  body {
-    padding: 10px;
-  }
-
-  table, thead, tbody, th, td, tr {
-    display: block;
-  }
-
-  table {
-    border: none;
-  }
-
-  tr {
-    margin-bottom: 15px;
-    background: #fff;
-    padding: 10px;
-    border-radius: 8px;
-  }
-
-  td {
-    text-align: right;
-    position: relative;
-    padding-left: 50%;
-  }
-
-  td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 10px;
-    top: 10px;
-    font-weight: bold;
-    text-align: left;
-  }
-
-  th {
-    display: none;
-  }
+  margin: 10px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
