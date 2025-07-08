@@ -72,30 +72,30 @@
             {% endfor %}
             <th>Attachment</th>
             <th>Status</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
         {% for row in data %}
             <tr>
-                {% for item in row %}
-                    <td>{{ item }}</td>
+                {% for i in range(row|length - 2) %}
+                    <td>{{ row[i] }}</td>
                 {% endfor %}
-                {% set report_id = row[0] %}
-                {% set filename = row[-2] %}
-                {% set status = row[-1] %}
-                <td class="attachment-links">
+                <td>
+                    {% set filename = row[-2] %}
                     {% if filename %}
                         <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a> |
-                        <a href="{{ url_for('download_file', report_id=report_id) }}">Download</a>
+                        <a href="{{ url_for('download_file', report_id=row[0]) }}">Download</a>
                     {% else %}
                         No file
                     {% endif %}
                 </td>
+                <td>{{ row[-1] }}</td>  <!-- Status -->
                 <td>
-                    {% if status != 'Closed' %}
-                        <a href="/close/{{ report_id }}" onclick="return confirm('Are you sure to close this report?')">Close</a>
+                    {% if row[-1] != 'Closed' %}
+                        <a href="/close/{{ row[0] }}" onclick="return confirm('Are you sure to close this report?');">🔒 Close</a>
                     {% else %}
-                        Closed
+                        ✅ Closed
                     {% endif %}
                 </td>
             </tr>
