@@ -1,54 +1,15 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Safety Hazard Reporting Form</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            padding: 30px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        form {
-            background: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            max-width: 600px;
-            margin: auto;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        label {
-            font-weight: bold;
-        }
-        input, select, textarea {
-            width: 100%;
-            margin: 8px 0 20px 0;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #28a745;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-    </style>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <title>Safety Hazard Reporting Form</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    
 <body>
+    <h1>Safety Hazard / Nearmiss / Incident Reporting</h1>
 
-<h1>Safety Hazard / Nearmiss / Incident Reporting</h1>
-
-<form method="POST" enctype="multipart/form-data" onsubmit="return disableButton(this);">
+    <form method="POST" enctype="multipart/form-data" onsubmit="return disableButton(this);">
 
     <label for="fullname">Full Name*</label>
     <input type="text" name="fullname" required>
@@ -138,14 +99,13 @@
     </script>
 
     <button type="submit">Submit Report</button>
-</form>
 
-<script>
-  function disableButton(form) {
-    form.querySelector("button[type='submit']").disabled = true;
-    return true;
-  }
-</script>
+    <script>
+      function disableButton(form) {
+        form.querySelector("button[type='submit']").disabled = true;
+        return true;
+      }
+    </script>
 
 </body>
 </html>
