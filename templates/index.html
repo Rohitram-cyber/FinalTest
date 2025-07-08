@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Safety Hazard Reporting Form</title>
-    <link rel="stylesheet" href="/static/style.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -10,6 +9,7 @@
             padding: 30px;
         }
         h1 {
+            text-align: center;
             color: #333;
         }
         form {
@@ -28,6 +28,8 @@
             margin: 8px 0 20px 0;
             padding: 10px;
             box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         button {
             padding: 10px 15px;
@@ -46,7 +48,8 @@
 
 <h1>Safety Hazard / Nearmiss / Incident Reporting</h1>
 
-    <form method="POST" enctype="multipart/form-data" onsubmit="return disableButton(this);">
+<form method="POST" enctype="multipart/form-data" onsubmit="return disableButton(this);">
+
     <label for="fullname">Full Name*</label>
     <input type="text" name="fullname" required>
 
@@ -85,23 +88,23 @@
         <option value="Incident">Incident</option>
     </select>
 
-        <label for="responsible">Responsible Person</label>
-<select name="responsible" required>
-    <option value="Sanjay Choudhary - Operation">Sanjay Choudhary - Operation</option>
-    <option value="Dikshit Das - Geology">Dikshit Das - Geology</option>
-    <option value="Arpan Mishra - Admin">Arpan Mishra - Admin</option>
-    <option value="Jhunu Hansa - Civil">Jhunu Hansa - Civil</option>
-    <option value="Vidyut Da - Security">Vidyut Da - Security</option>
-    <option value="Tankadhar - Logistics">Tankadhar - Logistics</option>
-</select>
+    <label for="responsible">Responsible Person for Compliance of Hazard</label>
+    <select name="responsible" required>
+        <option value="Sanjay Choudhary - Operation">Sanjay Choudhary - Operation</option>
+        <option value="Dikshit Das - Geology">Dikshit Das - Geology</option>
+        <option value="Arpan Mishra - Admin">Arpan Mishra - Admin</option>
+        <option value="Jhunu Hansa - Civil">Jhunu Hansa - Civil</option>
+        <option value="Vidyut Da - Security">Vidyut Da - Security</option>
+        <option value="Tankadhar - Logistics">Tankadhar - Logistics</option>
+    </select>
 
     <label for="location">Location</label>
-    <input type="text" name="location" value="Ganua Iron Ore Mines">
+    <input type="text" name="location" value="Ganua Iron Ore Mines" required>
 
     <label for="sublocation">Sub-location</label>
     <input type="text" name="sublocation">
 
-    <label for="description">Hazard Description</label>
+    <label for="description">Hazard Description*</label>
     <textarea name="description" rows="4" required></textarea>
 
     <label for="file">Upload Attachment</label>
@@ -109,7 +112,8 @@
 
     <button type="submit">Submit Report</button>
 </form>
-    <script>
+
+<script>
   function disableButton(form) {
     form.querySelector("button[type='submit']").disabled = true;
     return true;
