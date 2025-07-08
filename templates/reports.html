@@ -65,7 +65,11 @@
     <thead>
         <tr>
             {% for header in headers %}
-                <th>{{ header }}</th>
+                {% if header == 'Filename' %}
+                    <th>Attachment</th>
+                {% else %}
+                    <th>{{ header }}</th>
+                {% endif %}
             {% endfor %}
             <th>Status</th>
         </tr>
