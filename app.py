@@ -47,7 +47,8 @@ def init_db():
         sublocation TEXT,
         description TEXT,
         filename TEXT,
-        file_blob BLOB
+        file_blob BLOB,
+        status TEXT DEFAULT 'Open'
     )''')
     conn.commit()
     conn.close()
@@ -114,11 +115,20 @@ def index():
 def show_reports():
     conn = sqlite3.connect("reports.db")
     c = conn.cursor()
-    c.execute("SELECT id, fullname, email, date, time, shift, department, report_type, responsible, location, sublocation, description, filename FROM reports")
+    c.execute("SELECT id, fullname, email, date, time, shift, department, report_type, responsible, location, sublocation, description, filename, status FROM reports")
     rows = c.fetchall()
-    headers = ["ID", "Full Name", "Email", "Date", "Time", "Shift", "Department", "Report Type", "Responsible Person", "Location", "Sub-location", "Description", "Filename"]
+    headers = ["ID", "Full Name", "Email", "Date", "Time", "Shift", "Department", "Report Type", "Responsible Person", "Location", "Sub-location", "Description", "Filename", "Status"]
     conn.close()
     return render_template("reports.html", headers=headers, data=rows)
+
+@app.route("/close/<int:report_id>")
+def close_report(report_id):
+    conn = sqlite3.connect('reports.db')
+    c = conn.cursor()
+    c.execute("UPDATE reports SET status = 'Closed' WHERE id = ?", (report_id,))
+    conn.commit()
+    conn.close()
+    return "<script>alert('✅ Report closed successfully!');window.location.href='/reports';</script>"
 
 @app.route("/download-excel")
 def download_excel():
