@@ -49,9 +49,6 @@
             color: #007bff;
             text-decoration: none;
         }
-        .attachment-links a {
-            margin-right: 10px;
-        }
     </style>
 </head>
 <body>
@@ -70,9 +67,7 @@
             {% for header in headers %}
                 <th>{{ header }}</th>
             {% endfor %}
-            <th>Attachment</th>
             <th>Status</th>
-            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -82,18 +77,8 @@
                     <td>{{ row[i] }}</td>
                 {% endfor %}
                 <td>
-                    {% set filename = row[-2] %}
-                    {% if filename %}
-                        <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a> |
-                        <a href="{{ url_for('download_file', report_id=row[0]) }}">Download</a>
-                    {% else %}
-                        No file
-                    {% endif %}
-                </td>
-                <td>{{ row[-1] }}</td>  <!-- Status -->
-                <td>
                     {% if row[-1] != 'Closed' %}
-                        <a href="/close/{{ row[0] }}" onclick="return confirm('Are you sure to close this report?');">🔒 Close</a>
+                        <a href="/close/{{ row[0] }}" onclick="return confirm('Are you sure to close this report?');">🔓 Open</a>
                     {% else %}
                         ✅ Closed
                     {% endif %}
