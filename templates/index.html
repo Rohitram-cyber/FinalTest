@@ -1,32 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Safety Hazard Reporting Form</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        
-        .form-buttons {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        button[type="reset"] {
-            background-color: #dc3545;
-        }
-
-        button[type="reset"]:hover {
-            background-color: #c82333;
-        }
-        
-        /* Blurred Background Image */
+        /* Background blur */
         body::before {
             content: "";
             background-image: url('/static/Hazardlogo.jpg');
             background-size: cover;
             background-repeat: no-repeat;
-            background-position: center center;
+            background-position: center;
             background-attachment: fixed;
             filter: blur(4px);
             position: fixed;
@@ -43,43 +28,42 @@
             padding: 0;
         }
 
-        /* Fixed Header with Logo and Title */
+        /* Fixed header */
         .header-fixed {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            background: rgba(176, 196, 222, 0.7);
+            background: rgba(176, 196, 222, 0.9);
             padding: 10px 0;
             text-align: center;
             z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .logo {
-            max-width: 120px;
+            max-width: 100px;
             height: auto;
             margin-bottom: 5px;
         }
 
         .header-fixed h1 {
-            margin: 5px 0 0 0;
+            margin: 5px 0 0;
             color: #FF0000;
             font-family: "Lucida Sans Typewriter", monospace;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
 
-        /* Form Styling */
+        /* Form layout */
         form {
             background: rgba(255, 255, 255, 0.95);
             padding: 25px;
-            border-radius: 8px;
+            border-radius: 10px;
             max-width: 600px;
-            margin: 200px auto 40px auto;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 180px auto 40px auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         label {
@@ -88,44 +72,83 @@
 
         input, select, textarea {
             width: 100%;
-            margin: 8px 0 20px 0;
             padding: 10px;
-            box-sizing: border-box;
+            margin: 8px 0 20px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
         }
 
         button {
             padding: 10px 15px;
             background-color: #28a745;
-            border: none;
             color: white;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
 
         button:hover {
             background-color: #218838;
         }
 
-        /* Responsive tweaks */
-        @media (max-width: 640px) {
-            form {
-                margin: 180px 10px 40px 10px;
-                padding: 20px;
+        button[type="reset"] {
+            background-color: #dc3545;
+        }
+
+        button[type="reset"]:hover {
+            background-color: #c82333;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .logo {
+                max-width: 80px;
             }
 
             .header-fixed h1 {
                 font-size: 18px;
             }
 
+            form {
+                margin: 160px 15px 30px 15px;
+                padding: 20px;
+            }
+
+            input, select, textarea, button {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .header-fixed h1 {
+                font-size: 16px;
+            }
+
             .logo {
-                max-width: 90px;
+                max-width: 70px;
             }
         }
     </style>
 </head>
-
 <body>
 
     <!-- Fixed Header -->
@@ -157,7 +180,7 @@
             <option value="G">G</option>
         </select>
 
-        <label for="department">Your Department</label>
+        <label for="department">Department</label>
         <select name="department" required>
             <option value="" disabled selected hidden>Select Department</option>
             <option value="Mining-Operation">Mining-Operation</option>
@@ -182,9 +205,9 @@
             <option value="Other">Other</option>
         </select>
 
-        <label for="responsible">Responsible for Compliance of Hazard (Concern Department Head)</label>
+        <label for="responsible">Responsible Person for Compliance of Hazard</label>
         <select name="responsible" required>
-            <option value="" disabled selected hidden>Select Concern Department</option>
+            <option value="" disabled selected hidden>Select Responsible Person</option>
             <option value="Mining-Operation">Mining-Operation</option>
             <option value="Civil">Civil</option>
             <option value="Security">Security</option>
@@ -218,7 +241,7 @@
 
         <div class="form-buttons">
             <button type="submit">Submit Report</button>
-            <button type="reset">Clear Form</button>
+            <button type="reset" onclick="return confirm('Clear the form?')">Clear Form</button>
         </div>
     </form>
 
