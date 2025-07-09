@@ -43,7 +43,7 @@ def init_db():
         conn.execute('''
             CREATE TABLE IF NOT EXISTS reports (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                fullname TEXT, email TEXT, date TEXT, time TEXT,
+                fullname TEXT, mobile TEXT, email TEXT, date TEXT, time TEXT,
                 shift TEXT, department TEXT, report_type TEXT,
                 responsible TEXT, location TEXT, sublocation TEXT,
                 description TEXT, filename TEXT, file_blob BLOB,
