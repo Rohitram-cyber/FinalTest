@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Submitted Reports</title>
     <style>
         body {
@@ -55,20 +56,18 @@
 
 <h1>Submitted Reports</h1>
 
+<!-- ✅ Download Buttons -->
 <div class="download-btn">
     <a href="/download-csv"><button>📄 Download CSV</button></a>
     <a href="/download-db"><button>🗄️ Download DB</button></a>
 </div>
 
+<!-- ✅ Reports Table -->
 <table>
     <thead>
         <tr>
             {% for header in headers %}
-                {% if header == 'Filename' %}
-                    <th>Attachment</th>
-                {% else %}
-                    <th>{{ header }}</th>
-                {% endif %}
+                <th>{{ "Attachment" if header == "Filename" else header }}</th>
             {% endfor %}
             <th>Status</th>
         </tr>
@@ -91,7 +90,7 @@
                 </td>
                 <td>
                     {% if row[-1] != 'Closed' %}
-                        <a href="/close/{{ report_id }}" onclick="return confirm('Are you sure to close this report?');">Opened Report(Click to close)</a>
+                        <a href="/close/{{ report_id }}" onclick="return confirm('Are you sure to close this report?');">Opened Report (Click to Close)</a>
                     {% else %}
                         ✅ Report Closed
                     {% endif %}
