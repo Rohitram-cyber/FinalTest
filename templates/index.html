@@ -140,11 +140,11 @@
     </div>
 
     <!-- ✅ Flash Message Block (shown after form submission) -->
-    <div class="container mt-5">
+    <div style="position: relative; max-width: 600px; margin: 120px auto 0 auto; z-index: 1050;">
         {% with messages = get_flashed_messages() %}
           {% if messages %}
-            <div class="alert alert-success alert-dismissible fade show mt-4" role="alert">
-              {{ messages[0] }}
+            <div class="alert alert-success alert-dismissible fade show shadow" role="alert" style="font-size: 16px;">
+              ✅ {{ messages[0] }}
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
           {% endif %}
