@@ -56,13 +56,11 @@
 
 <h1>Submitted Reports</h1>
 
-<!-- ✅ Download Buttons -->
 <div class="download-btn">
     <a href="/download-csv"><button>📄 Download CSV</button></a>
     <a href="/download-db"><button>🗄️ Download DB</button></a>
 </div>
 
-<!-- ✅ Reports Table -->
 <table>
     <thead>
         <tr>
@@ -75,11 +73,13 @@
     <tbody>
         {% for row in data %}
             <tr>
-                {% for i in range(row|length - 2) %}
+                {% set report_id = row[0] %}
+                {% for i in range(1, row|length - 2) %}
                     <td>{{ row[i] }}</td>
                 {% endfor %}
+
+                <!-- Attachment column -->
                 <td>
-                    {% set report_id = row[0] %}
                     {% set filename = row[-2] %}
                     {% if filename %}
                         <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a> |
@@ -88,6 +88,8 @@
                         No file
                     {% endif %}
                 </td>
+
+                <!-- Status column -->
                 <td>
                     {% if row[-1] != 'Closed' %}
                         <a href="/close/{{ report_id }}" onclick="return confirm('Are you sure to close this report?');">Opened Report (Click to Close)</a>
