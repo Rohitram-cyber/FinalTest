@@ -127,7 +127,7 @@ Description: {description}
 Responsible Person: {responsible}
 """
             msg = Message(subject="New Hazard Report Submission",
-                          recipients=["rohit.ram@jsw.in"],
+                          recipients=["rohit29ram@gmail.com"],
                           body=email_body)
             if uploaded_file:
                 uploaded_file.stream.seek(0)
