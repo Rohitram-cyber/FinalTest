@@ -56,7 +56,6 @@
 <h1>Submitted Reports</h1>
 
 <div class="download-btn">
-    <a href="/download-excel"><button>⬇️ Download Excel</button></a>
     <a href="/download-csv"><button>📄 Download CSV</button></a>
     <a href="/download-db"><button>🗄️ Download DB</button></a>
 </div>
@@ -92,9 +91,9 @@
                 </td>
                 <td>
                     {% if row[-1] != 'Closed' %}
-                        <a href="/close/{{ report_id }}" onclick="return confirm('Are you sure to close this report?');">🔓 Open</a>
+                        <a href="/close/{{ report_id }}" onclick="return confirm('Are you sure to close this report?');">Opened Report(Click to close)</a>
                     {% else %}
-                        ✅ Closed
+                        ✅ Report Closed
                     {% endif %}
                 </td>
             </tr>
