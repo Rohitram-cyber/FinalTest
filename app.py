@@ -1,32 +1,35 @@
-from flask import Flask, render_template, request, send_file, send_from_directory
-import csv, os, sqlite3, io
+import os, csv, sqlite3, io
+from flask import Flask, render_template, request, redirect, url_for, send_file, send_from_directory, flash
 from werkzeug.utils import secure_filename
-import pandas as pd
 from flask_mail import Mail, Message
 from datetime import datetime
+import pandas as pd
 
+# Initialize app
 app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "defaultsecret")
 
-# Email configuration
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'rohit06ram@gmail.com'
-app.config['MAIL_PASSWORD'] = 'mvbu rhvv wmeh kiob'
-app.config['MAIL_DEFAULT_SENDER'] = ('JSW Hazard Report', 'rohit06ram@gmail.com')
+# Mail Config
+app.config.update(
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT=587,
+    MAIL_USE_TLS=True,
+    MAIL_USERNAME=os.environ.get("MAIL_USERNAME"),
+    MAIL_PASSWORD=os.environ.get("MAIL_PASSWORD"),
+    MAIL_DEFAULT_SENDER=('JSW Hazard Report', os.environ.get("MAIL_USERNAME")),
+)
 
 mail = Mail(app)
 
-# File upload config
+# File Upload Config
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'docx'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB limit
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'docx'}
 
-# Create upload folder if not exists
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# CSV file
+# CSV Setup
 CSV_FILE = "reports.csv"
 if not os.path.exists(CSV_FILE):
     with open(CSV_FILE, "w", newline='') as f:
@@ -37,39 +40,32 @@ if not os.path.exists(CSV_FILE):
             "Hazard Description", "Filename"
         ])
 
-# SQLite DB setup
+# SQLite DB Setup
 def init_db():
-    conn = sqlite3.connect("reports.db")
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS reports (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fullname TEXT, email TEXT, date TEXT, time TEXT,
-            shift TEXT, department TEXT, report_type TEXT,
-            responsible TEXT, location TEXT, sublocation TEXT,
-            description TEXT, filename TEXT, file_blob BLOB,
-            status TEXT DEFAULT 'Open'
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
+    with sqlite3.connect("reports.db") as conn:
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS reports (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                fullname TEXT, email TEXT, date TEXT, time TEXT,
+                shift TEXT, department TEXT, report_type TEXT,
+                responsible TEXT, location TEXT, sublocation TEXT,
+                description TEXT, filename TEXT, file_blob BLOB,
+                status TEXT DEFAULT 'Open'
+            )
+        ''')
 init_db()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def save_report_to_db(data, file_blob):
-    conn = sqlite3.connect('reports.db')
-    c = conn.cursor()
-    c.execute('''
-        INSERT INTO reports (
-            fullname, email, date, time, shift, department, report_type,
-            responsible, location, sublocation, description, filename, file_blob
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', data + [file_blob])
-    conn.commit()
-    conn.close()
+    with sqlite3.connect("reports.db") as conn:
+        conn.execute('''
+            INSERT INTO reports (
+                fullname, email, date, time, shift, department, report_type,
+                responsible, location, sublocation, description, filename, file_blob
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', data + [file_blob])
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -85,50 +81,36 @@ def index():
             with open(file_path, "rb") as f:
                 file_blob = f.read()
 
-        # Get form data
-        fullname = request.form.get("fullname")
-        email = request.form.get("email")
-        date_ = request.form.get("date")
-        time_ = request.form.get("time")
-        shift = request.form.get("shift")
-        department = request.form.get("department")
-        report_type = request.form.get("report_type")
-        responsible = request.form.get("responsible")
-        location = request.form.get("location")
-        sublocation = request.form.get("sublocation")
-        description = request.form.get("description")
-
-        data = [fullname, email, date_, time_, shift, department, report_type,
-                responsible, location, sublocation, description, filename]
+        # Form Data
+        form_data = {
+            "fullname": request.form.get("fullname"),
+            "email": request.form.get("email"),
+            "date": request.form.get("date"),
+            "time": request.form.get("time"),
+            "shift": request.form.get("shift"),
+            "department": request.form.get("department"),
+            "report_type": request.form.get("report_type"),
+            "responsible": request.form.get("responsible"),
+            "location": request.form.get("location"),
+            "sublocation": request.form.get("sublocation"),
+            "description": request.form.get("description"),
+            "filename": filename
+        }
 
         # Save to CSV
         with open(CSV_FILE, "a", newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(data)
+            writer.writerow(form_data.values())
 
         # Save to DB
-        save_report_to_db(data, file_blob)
+        save_report_to_db(list(form_data.values()), file_blob)
 
-        # Send email
+        # Send Email
         try:
-            email_body = f"""
-New Hazard Report Submitted:
-
-Full Name: {fullname}
-Email: {email}
-Date: {date_}
-Time: {time_}
-Shift: {shift}
-Department: {department}
-Report Type: {report_type}
-Location: {location}
-Sub-location: {sublocation}
-Description: {description}
-Concern Department: {responsible}
-"""
+            body = "\n".join([f"{key.replace('_', ' ').title()}: {value}" for key, value in form_data.items() if key != "filename"])
             msg = Message(subject="New Hazard Report Submission",
                           recipients=["rohit29ram@gmail.com"],
-                          body=email_body)
+                          body=f"New Hazard Report Submitted:\n\n{body}")
             if uploaded_file:
                 uploaded_file.stream.seek(0)
                 msg.attach(uploaded_file.filename, uploaded_file.content_type, uploaded_file.read())
@@ -136,34 +118,29 @@ Concern Department: {responsible}
         except Exception as e:
             print("Error sending email:", e)
 
-        return "✅ Report submitted successfully! <br><a href='/'>Back to form</a>"
+        flash("✅ Report submitted successfully!")
+        return redirect(url_for('index'))
 
     return render_template("index.html", time=datetime.now().timestamp())
 
 @app.route("/reports")
 def show_reports():
-    conn = sqlite3.connect("reports.db")
-    c = conn.cursor()
-    c.execute("SELECT id, fullname, email, date, time, shift, department, report_type, responsible, location, sublocation, description, filename, status FROM reports")
-    rows = c.fetchall()
-    conn.close()
+    with sqlite3.connect("reports.db") as conn:
+        rows = conn.execute("SELECT id, fullname, email, date, time, shift, department, report_type, responsible, location, sublocation, description, filename, status FROM reports").fetchall()
     headers = ["ID", "Full Name", "Email", "Date", "Time", "Shift", "Department", "Report Type", "Responsible Person", "Location", "Sub-location", "Description", "Attachment", "Status"]
     return render_template("reports.html", headers=headers, data=rows)
 
 @app.route("/close/<int:report_id>")
 def close_report(report_id):
-    conn = sqlite3.connect('reports.db')
-    c = conn.cursor()
-    c.execute("UPDATE reports SET status = 'Closed' WHERE id = ?", (report_id,))
-    conn.commit()
-    conn.close()
-    return "<script>alert('✅ Report closed successfully!');window.location.href='/reports';</script>"
+    with sqlite3.connect("reports.db") as conn:
+        conn.execute("UPDATE reports SET status = 'Closed' WHERE id = ?", (report_id,))
+    flash("✅ Report closed successfully.")
+    return redirect(url_for("show_reports"))
 
 @app.route("/download-excel")
 def download_excel():
-    conn = sqlite3.connect("reports.db")
-    df = pd.read_sql_query("SELECT * FROM reports", conn)
-    conn.close()
+    with sqlite3.connect("reports.db") as conn:
+        df = pd.read_sql_query("SELECT * FROM reports", conn)
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Reports')
@@ -172,11 +149,8 @@ def download_excel():
 
 @app.route("/download/<int:report_id>")
 def download_file(report_id):
-    conn = sqlite3.connect('reports.db')
-    c = conn.cursor()
-    c.execute("SELECT filename, file_blob FROM reports WHERE id = ?", (report_id,))
-    row = c.fetchone()
-    conn.close()
+    with sqlite3.connect("reports.db") as conn:
+        row = conn.execute("SELECT filename, file_blob FROM reports WHERE id = ?", (report_id,)).fetchone()
     if row and row[1]:
         return send_file(io.BytesIO(row[1]), download_name=row[0], as_attachment=True)
     return "File not found."
