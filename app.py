@@ -122,22 +122,15 @@ def index():
 
 @app.route("/reports")
 def show_reports():
-    try:
-        with sqlite3.connect("reports.db") as conn:
-            rows = conn.execute("""
-                SELECT id, fullname, mobile, date, time, shift, department,
-                       report_type, responsible, location, sublocation,
-                       description, filename, status
-                FROM reports
-            """).fetchall()
-        headers = [
-            "ID", "Full Name", "Mobile No.", "Date", "Time", "Shift", "Department",
-            "Report Type", "Concern Department for Compliance of Hazard", "Location",
-            "Sub-location", "Description", "Filename", "Status"
-        ]
-        return render_template("reports.html", headers=headers, data=rows)
-    except Exception as e:
-        return f"<h2>Server Error:</h2><pre>{str(e)}</pre>"
+    with sqlite3.connect("reports.db") as conn:
+        rows = conn.execute("""
+            SELECT id, fullname, mobile, date, time, shift, department,
+                   report_type, responsible, location, sublocation,
+                   description, filename, status
+            FROM reports
+        """).fetchall()
+    headers = ["ID", "Full Name", "Mobile No.", "Date", "Time", "Shift", "Department", "Report Type", "Concern Department for Compliance of Hazard", "Location", "Sub-location", "Description", "Attachment", "Status"]
+    return render_template("reports.html", headers=headers, data=rows)
 
 @app.route("/close/<int:report_id>")
 def close_report(report_id):
