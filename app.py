@@ -5,31 +5,28 @@ from flask_mail import Mail, Message
 from datetime import datetime
 import pandas as pd
 
-# Initialize app
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "defaultsecret")
 
-# Mail Config
+# Email configuration via environment variables
 app.config.update(
     MAIL_SERVER='smtp.gmail.com',
     MAIL_PORT=587,
     MAIL_USE_TLS=True,
     MAIL_USERNAME=os.environ.get("MAIL_USERNAME"),
     MAIL_PASSWORD=os.environ.get("MAIL_PASSWORD"),
-    MAIL_DEFAULT_SENDER=('JSW Hazard Report', os.environ.get("MAIL_USERNAME")),
+    MAIL_DEFAULT_SENDER=('JSW Hazard Report', os.environ.get("MAIL_USERNAME"))
 )
-
 mail = Mail(app)
 
-# File Upload Config
+# Upload settings
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB limit
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'docx'}
-
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# CSV Setup
+# CSV setup
 CSV_FILE = "reports.csv"
 if not os.path.exists(CSV_FILE):
     with open(CSV_FILE, "w", newline='') as f:
@@ -40,7 +37,7 @@ if not os.path.exists(CSV_FILE):
             "Hazard Description", "Filename"
         ])
 
-# SQLite DB Setup
+# DB setup
 def init_db():
     with sqlite3.connect("reports.db") as conn:
         conn.execute('''
@@ -81,19 +78,19 @@ def index():
             with open(file_path, "rb") as f:
                 file_blob = f.read()
 
-        # Form Data
+        # Form data collection
         form_data = {
-            "fullname": request.form.get("fullname"),
-            "email": request.form.get("email"),
-            "date": request.form.get("date"),
-            "time": request.form.get("time"),
-            "shift": request.form.get("shift"),
-            "department": request.form.get("department"),
-            "report_type": request.form.get("report_type"),
-            "responsible": request.form.get("responsible"),
-            "location": request.form.get("location"),
-            "sublocation": request.form.get("sublocation"),
-            "description": request.form.get("description"),
+            "fullname": request.form.get("fullname", "").strip(),
+            "email": request.form.get("email", "").strip(),
+            "date": request.form.get("date", "").strip(),
+            "time": request.form.get("time", "").strip(),
+            "shift": request.form.get("shift", "").strip(),
+            "department": request.form.get("department", "").strip(),
+            "report_type": request.form.get("report_type", "").strip(),
+            "responsible": request.form.get("responsible", "").strip(),
+            "location": request.form.get("location", "").strip(),
+            "sublocation": request.form.get("sublocation", "").strip(),
+            "description": request.form.get("description", "").strip(),
             "filename": filename
         }
 
@@ -107,7 +104,7 @@ def index():
 
         # Send Email
         try:
-            body = "\n".join([f"{key.replace('_', ' ').title()}: {value}" for key, value in form_data.items() if key != "filename"])
+            body = "\n".join([f"{k.replace('_', ' ').title()}: {v}" for k, v in form_data.items() if k != "filename"])
             msg = Message(subject="New Hazard Report Submission",
                           recipients=["rohit29ram@gmail.com"],
                           body=f"New Hazard Report Submitted:\n\n{body}")
@@ -119,14 +116,19 @@ def index():
             print("Error sending email:", e)
 
         flash("✅ Report submitted successfully!")
-        return redirect(url_for('index'))
+        return redirect(url_for("index"))
 
     return render_template("index.html", time=datetime.now().timestamp())
 
 @app.route("/reports")
 def show_reports():
     with sqlite3.connect("reports.db") as conn:
-        rows = conn.execute("SELECT id, fullname, email, date, time, shift, department, report_type, responsible, location, sublocation, description, filename, status FROM reports").fetchall()
+        rows = conn.execute("""
+            SELECT id, fullname, email, date, time, shift, department,
+                   report_type, responsible, location, sublocation,
+                   description, filename, status
+            FROM reports
+        """).fetchall()
     headers = ["ID", "Full Name", "Email", "Date", "Time", "Shift", "Department", "Report Type", "Responsible Person", "Location", "Sub-location", "Description", "Attachment", "Status"]
     return render_template("reports.html", headers=headers, data=rows)
 
