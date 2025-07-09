@@ -5,6 +5,21 @@
     <title>Safety Hazard Reporting Form</title>
 
     <style>
+        
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        button[type="reset"] {
+            background-color: #dc3545;
+        }
+
+        button[type="reset"]:hover {
+            background-color: #c82333;
+        }
+        
         /* Blurred Background Image */
         body::before {
             content: "";
@@ -145,13 +160,17 @@
         <label for="department">Department</label>
         <select name="department" required>
             <option value="" disabled selected hidden>Select Department</option>
-            <option value="Operation">Operation</option>
+            <option value="Mining-Operation">Mining-Operation</option>
             <option value="IT">IT</option>
-            <option value="HR">HR</option>
-            <option value="Admin">Admin</option>
+            <option value="HR & Admin">HR & Admin</option>
+            <option value="Electrical">Electrical</option>
             <option value="Security">Security</option>
             <option value="Logistics">Logistics</option>
-            <option value="Geology">Geology</option>
+            <option value="Geology(QA&QC)">Geology(QA&QC)</option>
+            <option value="Exploration">Exploration</option>
+            <option value="Stores">Stores</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="Survey">Survey</option>
         </select>
 
         <label for="report_type">Report Type</label>
@@ -198,7 +217,10 @@
         <label for="file">Upload Attachment (Images & PDF only)</label>
         <input type="file" name="file" accept=".png, .jpg, .jpeg, .pdf" onchange="checkFileSize(this)" required>
 
-        <button type="submit">Submit Report</button>
+        <div class="form-buttons">
+            <button type="submit">Submit Report</button>
+            <button type="reset">Clear Form</button>
+        </div>
     </form>
 
     <script>
