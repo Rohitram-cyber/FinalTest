@@ -70,6 +70,8 @@ def save_report_to_db(data, file_blob):
     conn.commit()
     conn.close()
 
+from datetime import datetime
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -109,7 +111,7 @@ def index():
 
         return "✅ Report submitted successfully! <br><a href='/'>Back to form</a>"
 
-    return render_template("index.html")
+    return render_template("index.html", time=datetime.now().timestamp())
 
 @app.route("/reports")
 def show_reports():
