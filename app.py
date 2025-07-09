@@ -124,7 +124,7 @@ Report Type: {report_type}
 Location: {location}
 Sub-location: {sublocation}
 Description: {description}
-Responsible Person: {responsible}
+Concern Department: {responsible}
 """
             msg = Message(subject="New Hazard Report Submission",
                           recipients=["rohit29ram@gmail.com"],
