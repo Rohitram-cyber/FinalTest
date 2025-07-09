@@ -1,4 +1,13 @@
 <style>
+
+        body {
+            background-image: url('/static/20-Examples-of-Hazards-in-the-Workplace-In-Australia.jpg');
+            background-size: cover;            /* or "contain" */
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;      /* Optional: keeps it fixed when scrolling */
+        }
+
         body {
             font-family: Arial, sans-serif;
             background-color: blue;
