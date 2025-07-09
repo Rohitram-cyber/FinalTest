@@ -5,16 +5,7 @@
     <title>Safety Hazard Reporting Form</title>
 
     <style>
-        /* Background blur using ::before */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #F5F5DC;
-            padding: 30px;
-            margin: 0;
-            position: relative;
-            z-index: 0;
-        }
-
+        /* Blurred Background Image */
         body::before {
             content: "";
             background-image: url('/static/Hazardlogo.jpg');
@@ -31,32 +22,46 @@
             z-index: -1;
         }
 
-        /* JSW logo */
-        .logo {
-            display: block;
-            margin: 0 auto 20px auto;
-            max-width: 150px;
-            height: auto;
-            z-index: 1;
-            position: relative;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F5F5DC;
+            margin: 0;
+            padding: 0;
         }
 
-        h1 {
+        /* Fixed Header with Logo and Title */
+        .header-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(245, 245, 220, 0.95);
+            padding: 10px 0;
             text-align: center;
-            color: #B22222;
-            z-index: 1;
-            position: relative;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
+        .logo {
+            max-width: 120px;
+            height: auto;
+            margin-bottom: 5px;
+        }
+
+        .header-fixed h1 {
+            margin: 0;
+            color: green;
+            font-size: 20px;
+        }
+
+        /* Form Styling */
         form {
             background: rgba(255, 255, 255, 0.95);
             padding: 25px;
             border-radius: 8px;
             max-width: 600px;
-            margin: auto;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: relative;
-            z-index: 1;
+            margin: 200px auto 40px auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
         label {
@@ -88,13 +93,15 @@
 </head>
 
 <body>
-    <!-- JSW Logo -->
-    <img src="{{ url_for('static', filename='JSW Logo.png') }}" alt="JSW Logo" class="logo">
 
-    <h1>Safety Hazard / Nearmiss / Incident Reporting</h1>
+    <!-- Fixed Header -->
+    <div class="header-fixed">
+        <img src="{{ url_for('static', filename='JSW Logo.png') }}" alt="JSW Logo" class="logo">
+        <h1>Safety Hazard / Nearmiss / Incident Reporting</h1>
+    </div>
 
+    <!-- Form Section -->
     <form method="POST" enctype="multipart/form-data" onsubmit="return disableButton(this);">
-        <!-- All your form fields remain unchanged -->
         <label for="fullname">Full Name*</label>
         <input type="text" name="fullname" required>
 
@@ -102,13 +109,13 @@
         <input type="email" name="email">
 
         <label for="date">Date</label>
-        <input type="date" name="date" id="date" required>
+        <input type="date" name="date" required>
 
         <label for="time">Time</label>
-        <input type="time" name="time" id="time" required>
+        <input type="time" name="time" required>
 
         <label for="shift">Shift Details</label>
-        <select name="shift" id="shift" required>
+        <select name="shift" required>
             <option value="" disabled selected hidden>Select Shift</option>
             <option value="A">A</option>
             <option value="B">B</option>
@@ -117,7 +124,7 @@
         </select>
 
         <label for="department">Department</label>
-        <select name="department" id="department" required>
+        <select name="department" required>
             <option value="" disabled selected hidden>Select Department</option>
             <option value="Operation">Operation</option>
             <option value="IT">IT</option>
@@ -129,7 +136,7 @@
         </select>
 
         <label for="report_type">Report Type</label>
-        <select name="report_type" id="report_type" required>
+        <select name="report_type" required>
             <option value="" disabled selected hidden>Select Report Type</option>
             <option value="Hazard">Hazard</option>
             <option value="Nearmiss">Nearmiss</option>
@@ -137,8 +144,8 @@
             <option value="Other">Other</option>
         </select>
 
-        <label for="responsible">Responsible for Compliance of Hazard</label>
-        <select name="responsible" id="responsible" required>
+        <label for="responsible">Responsible for Compliance of Hazard (Concern Department Head)</label>
+        <select name="responsible" required>
             <option value="" disabled selected hidden>Select Concern Department</option>
             <option value="Mining-Operation">Mining-Operation</option>
             <option value="Admin">Admin</option>
@@ -156,7 +163,7 @@
         </select>
 
         <label for="location">Location</label>
-        <select name="location" id="location" required>
+        <select name="location" required>
             <option value="" disabled selected hidden>Select Location</option>
             <option value="Nuagaon Iron Ore Mines">Nuagaon Iron Ore Mines</option>
             <option value="Narayanposhi Iron & Mn. Mines">Narayanposhi Iron & Mn. Mines</option>
@@ -164,29 +171,29 @@
         </select>
 
         <label for="sublocation">Sub-Location</label>
-        <input type="text" name="sublocation" id="sublocation" required>
+        <input type="text" name="sublocation" required>
 
         <label for="description">Hazard Description*</label>
         <textarea name="description" rows="4" required></textarea>
 
         <label for="file">Upload Attachment (Images & PDF only)</label>
-        <input type="file" name="file" id="file" accept=".png, .jpg, .jpeg, .pdf" onchange="checkFileSize(this)" required>
+        <input type="file" name="file" accept=".png, .jpg, .jpeg, .pdf" onchange="checkFileSize(this)" required>
 
         <button type="submit">Submit Report</button>
     </form>
 
     <script>
+        function disableButton(form) {
+            form.querySelector("button[type='submit']").disabled = true;
+            return true;
+        }
+
         function checkFileSize(input) {
             const maxSizeMB = 10;
             if (input.files[0] && input.files[0].size > maxSizeMB * 1024 * 1024) {
                 alert("⚠️ File size exceeds 10MB. Please choose a smaller file.");
-                input.value = "";
+                input.value = ""; // Clear file input
             }
-        }
-
-        function disableButton(form) {
-            form.querySelector("button[type='submit']").disabled = true;
-            return true;
         }
     </script>
 
