@@ -81,7 +81,7 @@ def index():
         # Form data collection
         form_data = {
             "fullname": request.form.get("fullname", "").strip(),
-            "email": request.form.get("email", "").strip(),
+            "mobile": request.form.get("mobile", "").strip(),
             "date": request.form.get("date", "").strip(),
             "time": request.form.get("time", "").strip(),
             "shift": request.form.get("shift", "").strip(),
@@ -115,7 +115,7 @@ def index():
         except Exception as e:
             print("Error sending email:", e)
 
-        flash("✅ Report submitted successfully!")
+        flash("✅Report submitted successfully!")
         return redirect(url_for("index"))
 
     return render_template("index.html", time=datetime.now().timestamp())
@@ -124,12 +124,12 @@ def index():
 def show_reports():
     with sqlite3.connect("reports.db") as conn:
         rows = conn.execute("""
-            SELECT id, fullname, email, date, time, shift, department,
+            SELECT id, fullname, mobile, date, time, shift, department,
                    report_type, responsible, location, sublocation,
                    description, filename, status
             FROM reports
         """).fetchall()
-    headers = ["ID", "Full Name", "Email", "Date", "Time", "Shift", "Department", "Report Type", "Responsible Person", "Location", "Sub-location", "Description", "Attachment", "Status"]
+    headers = ["ID", "Full Name", "Mobile No.", "Date", "Time", "Shift", "Department", "Report Type", "Concern Department for Compliance of Hazard", "Location", "Sub-location", "Description", "Attachment", "Status"]
     return render_template("reports.html", headers=headers, data=rows)
 
 @app.route("/close/<int:report_id>")
