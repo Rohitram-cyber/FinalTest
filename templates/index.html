@@ -23,7 +23,7 @@
         }
 
         body {
-            font-family: Lucida Sans Typewriter, Lucida Sans Typewriter;
+            font-family: "Times New Roman", Times, serif;
             margin: 0;
             padding: 0;
         }
@@ -50,6 +50,7 @@
         .header-fixed h1 {
             margin: 5px 0 0 0;
             color: #FF0000;
+            font-family: "Lucida Sans Typewriter", monospace;
             font-size: 24px;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
@@ -90,6 +91,22 @@
 
         button:hover {
             background-color: #218838;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 640px) {
+            form {
+                margin: 180px 10px 40px 10px;
+                padding: 20px;
+            }
+
+            .header-fixed h1 {
+                font-size: 18px;
+            }
+
+            .logo {
+                max-width: 90px;
+            }
         }
     </style>
 </head>
@@ -194,7 +211,7 @@
             const maxSizeMB = 10;
             if (input.files[0] && input.files[0].size > maxSizeMB * 1024 * 1024) {
                 alert("⚠️ File size exceeds 10MB. Please choose a smaller file.");
-                input.value = ""; // Clear file input
+                input.value = "";
             }
         }
     </script>
