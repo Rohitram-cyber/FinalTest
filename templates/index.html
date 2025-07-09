@@ -156,8 +156,11 @@
         <label for="fullname">Full Name*</label>
         <input type="text" name="fullname" required>
 
-        <label for="email">Email ID</label>
-        <input type="email" name="email">
+        <label for="mobile">Mobile No*</label>
+        <input type="tel" name="mobile" id="mobile" pattern="[0-9]{10}" maxlength="10" required
+           placeholder="Enter 10-digit mobile number"
+           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
+        <small style="color: gray;">Only 10-digit mobile number allowed</small>
 
         <label for="date">Date</label>
         <input type="date" name="date" required>
@@ -238,6 +241,62 @@
             <button type="reset" class="btn btn-reset" onclick="return confirm('Clear the form?')">Clear Form</button>
         </div>
     </form>
+
+    <script>
+        window.onload = function () {
+            const dateInput = document.getElementById("date");
+            const timeInput = document.getElementById("time");
+
+            const now = new Date();
+
+            // Set today's date as default and min
+            const today = now.toISOString().split("T")[0];
+            dateInput.min = today;
+            dateInput.value = today;
+
+            // Set current time as default
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const currentTime = `${hours}:${minutes}`;
+            timeInput.value = currentTime;
+            timeInput.min = currentTime;
+
+            // Handle date change
+            dateInput.addEventListener("change", function () {
+                const selectedDate = dateInput.value;
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const currentTime = `${hours}:${minutes}`;
+
+                if (selectedDate === today) {
+                    timeInput.min = currentTime;
+                    if (timeInput.value < currentTime) {
+                        alert("⚠️ Cannot select past time for today.");
+                        timeInput.value = currentTime;
+                    }
+                } else {
+                    timeInput.min = "00:00";
+                }
+            });
+
+            // Handle time change
+            timeInput.addEventListener("change", function () {
+                const selectedDate = dateInput.value;
+                const selectedTime = timeInput.value;
+
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const currentTime = `${hours}:${minutes}`;
+
+                if (selectedDate === today && selectedTime < currentTime) {
+                    alert("⚠️ Cannot select past time for today.");
+                    timeInput.value = currentTime;
+                }
+            });
+        };
+    </script>
 
     <script>
         function disableButton(form) {
