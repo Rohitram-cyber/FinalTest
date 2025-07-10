@@ -129,7 +129,7 @@ def show_reports():
                description, filename, status
             FROM reports
         """).fetchall()
-    headers = ["Full Name", "Mobile No.", "Date", "Time", "Shift", "Department", "Report Type", "Concern Department for Compliance of Hazard", "Location", "Sub-location", "Description", "Attachment", "Status"]
+    headers = ["ID", "Full Name", "Mobile No.", "Date", "Time", "Shift", "Department", "Report Type", "Concern Department for Compliance of Hazard", "Location", "Sub-location", "Description", "Attachment", "Status"]
     return render_template("reports.html", headers=headers, data=rows)
 
 @app.route("/close/<int:report_id>")
