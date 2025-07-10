@@ -64,7 +64,6 @@
 <table>
     <thead>
         <tr>
-            {% for header in headers[1:] %}
                 <th>{{ "Attachment" if header == "Filename" else header }}</th>
             {% endfor %}
         </tr>
