@@ -85,6 +85,23 @@ def index():
             "filename": filename
         }
 
+        # Validate date and time
+        try:
+            submitted_datetime = datetime.strptime(f"{form_data['date']} {form_data['time']}", "%Y-%m-%d %H:%M")
+            now = datetime.now()
+
+            if submitted_datetime > now:
+                flash("⚠️ Future date/time not allowed.")
+                return redirect(url_for("index"))
+
+            if (now - submitted_datetime).days > 7:
+                flash("⚠️ Only reports from the past 7 days are allowed.")
+                return redirect(url_for("index"))
+
+        except Exception as e:
+            flash("⚠️ Invalid date or time format.")
+            return redirect(url_for("index"))
+
         # Save to CSV
         with open("reports.csv", "a", newline='') as file:
             writer = csv.writer(file)
