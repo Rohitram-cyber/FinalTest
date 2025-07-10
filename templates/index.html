@@ -242,32 +242,45 @@
     </form>
 
     <!-- ✅ JS Scripts -->
+    
     <script>
         window.onload = function () {
             const dateInput = document.getElementById("date");
             const timeInput = document.getElementById("time");
 
             const now = new Date();
+
+            // Format helper
+            const pad = n => n.toString().padStart(2, '0');
+
+            // Current date and time
             const today = now.toISOString().split("T")[0];
-            dateInput.min = today;
+            const hours = pad(now.getHours());
+            const minutes = pad(now.getMinutes());
+            const currentTime = `${hours}:${minutes}`;
+
+            // Set default values
             dateInput.value = today;
-
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const currentTime = ${hours}:${minutes};
             timeInput.value = currentTime;
-            timeInput.min = currentTime;
+            timeInput.min = "00:00";
+            timeInput.max = "23:59";
 
+            // Allow only last 7 days
+            const pastDate = new Date(now);
+            pastDate.setDate(now.getDate() - 7);
+            const minDate = pastDate.toISOString().split("T")[0];
+
+            // Set date limits
+            dateInput.min = minDate;
+            dateInput.max = today;
+
+            // Disable past time if today's date is selected
             dateInput.addEventListener("change", function () {
                 const selectedDate = dateInput.value;
-                const now = new Date();
-                const currentTime = ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')};
-
                 if (selectedDate === today) {
                     timeInput.min = currentTime;
-                    if (timeInput.value < currentTime) {
-                        alert("⚠️ Cannot select past time for today.");
-                        timeInput.value = currentTime;
+                if (timeInput.value < currentTime) {
+                    timeInput.value = currentTime;
                     }
                 } else {
                     timeInput.min = "00:00";
@@ -276,29 +289,12 @@
 
             timeInput.addEventListener("change", function () {
                 const selectedDate = dateInput.value;
-                const selectedTime = timeInput.value;
-                const now = new Date();
-                const currentTime = ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')};
-
-                if (selectedDate === today && selectedTime < currentTime) {
+                if (selectedDate === today && timeInput.value < currentTime) {
                     alert("⚠️ Cannot select past time for today.");
                     timeInput.value = currentTime;
                 }
             });
         };
-
-        function disableButton(form) {
-            form.querySelector("button[type='submit']").disabled = true;
-            return true;
-        }
-
-        function checkFileSize(input) {
-            const maxSizeMB = 10;
-            if (input.files[0] && input.files[0].size > maxSizeMB * 1024 * 1024) {
-                alert("⚠️ File size exceeds 10MB. Please choose a smaller file.");
-                input.value = "";
-            }
-        }
     </script>
 </body>
 </html>
