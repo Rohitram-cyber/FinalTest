@@ -59,8 +59,10 @@
 <div class="download-btn">
     <a href="/download-csv"><button>📄 Download CSV</button></a>
     <a href="/download-db"><button>🗄️ Download DB</button></a>
+    <a href="/download-excel"><button>📊 Download Excel</button></a>
 </div>
 
+{% if headers and data %}
 <table>
     <thead>
         <tr>
@@ -73,24 +75,23 @@
         {% for row in data %}
         <tr>
             {% set report_id = row[0] %}
-
-            {# Display fields except last 2 (status and closure_filename) #}
-            {% for i in range(1, row|length - 2) %}
+            
+            {# Display all columns except ID and last 3 (filename, status, closure_filename) #}
+            {% for i in range(1, row|length - 3) %}
                 <td>{{ row[i] }}</td>
             {% endfor %}
 
-            {# File Attachment column #}
+            {# Attachment column #}
             <td>
                 {% set filename = row[-3] %}
                 {% if filename %}
-                    <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a> |
                     <a href="{{ url_for('download_file', report_id=report_id) }}">Download</a>
                 {% else %}
                     No file
                 {% endif %}
             </td>
 
-            {# Status / Close report button #}
+            {# Status & Close Option #}
             <td>
                 {% if row[-2] != 'Closed' %}
                     <a href="{{ url_for('close_report', report_id=report_id) }}">Upload & Close</a>
@@ -99,7 +100,7 @@
                 {% endif %}
             </td>
 
-            {# Closure Evidence Download #}
+            {# Closure Evidence Column #}
             <td>
                 {% if row[-1] %}
                     <a href="{{ url_for('download_closure_file', report_id=report_id) }}">Download</a>
@@ -111,6 +112,9 @@
         {% endfor %}
     </tbody>
 </table>
+{% else %}
+<p style="text-align:center; color:#666;">No reports submitted yet.</p>
+{% endif %}
 
 </body>
 </html>
