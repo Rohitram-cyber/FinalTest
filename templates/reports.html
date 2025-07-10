@@ -5,69 +5,157 @@
   <title>Submitted Reports</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- You can optionally include Bootstrap -->
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9; }
-    h1 { color: #333; text-align: center; }
-    .btn-container { display: flex; flex-wrap: wrap; justify-content: center; gap:10px; margin-bottom:20px; }
-    .btn-container a { text-decoration: none; }
-    .btn-container button { background-color:#007bff; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; }
-    .btn-container button:hover{background:#0056b3;}
-    .table-responsive{overflow-x:auto;}
-    table{width:100%;border-collapse:collapse;}
-    th,td{border:1px solid #aaa;padding:8px;text-align:left;}
-    th{background:#ddd;}
-    tr:nth-child(even){background:#f1f1f1;}
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background-color: #f9f9f9;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .download-btn {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .download-btn button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .download-btn button:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: left;
+      word-break: break-word;
+    }
+
+    th {
+      background-color: #ddd;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f1f1f1;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+
+      table {
+        font-size: 13px;
+      }
+
+      .download-btn {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .download-btn button {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
   </style>
 </head>
 <body>
+
   <h1>Submitted Reports</h1>
 
-  <div class="btn-container">
-    <a href="/download-csv"><button>📄 Download CSV</button></a>
-    <a href="/download-db"><button>🗄️ Download DB</button></a>
-    <a href="/download-excel"><button>📊 Download Excel</button></a>
+  <div class="download-btn">
+    <a href="/download-csv"><button>📄 Download CSV</button></a>
+    <a href="/download-db"><button>🗄️ Download DB</button></a>
+    <a href="/download-excel"><button>📊 Download Excel</button></a>
   </div>
 
   {% if headers and data %}
-    <div class="table-responsive">
-      <table>
-        <thead>
-          <tr>
-            {% for header in headers[1:] %}
-              <th>{{ header }}</th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in data %}
-            <tr>
-              {% set report_id = row[0] %}
-              {% for i in range(1, row|length - 3) %}
-                <td>{{ row[i] }}</td>
-              {% endfor %}
-              <td>
-                {% if row[-3] %}
-                  <a href="{{ url_for('download_file', report_id=report_id) }}">View & Download</a>
-                {% else %}No file{% endif %}
-              </td>
-              <td>
-                {% if row[-2] != 'Closed' %}
-                  <a href="{{ url_for('close_report', report_id=report_id) }}">Upload ▲ & Close</a>
-                {% else %}✅ Closed{% endif %}
-              </td>
-              <td>
-                {% if row[-1] %}
-                  <a href="{{ url_for('download_closure_file', report_id=report_id) }}">Download Evidence</a>
-                {% else %}Not uploaded{% endif %}
-              </td>
-            </tr>
+  <div style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          {% for header in headers[1:] %}
+            <th>{{ "Attachment" if header == "Filename" else header }}</th>
           {% endfor %}
-        </tbody>
-      </table>
-    </div>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data %}
+        <tr>
+          {% set report_id = row[0] %}
+
+          {# Main form data fields (excluding ID and last 3) #}
+          {% for i in range(1, row|length - 3) %}
+            <td>{{ row[i] }}</td>
+          {% endfor %}
+
+          {# Attachment column #}
+          <td>
+            {% if row[-3] %}
+              <a href="{{ url_for('download_file', report_id=report_id) }}" target="_blank">View</a> |
+              <a href="{{ url_for('download_file', report_id=report_id) }}">Download</a>
+            {% else %}
+              No file
+            {% endif %}
+          </td>
+
+          {# Status column with close option #}
+          <td>
+            {% if row[-2] != 'Closed' %}
+              <a href="{{ url_for('close_report', report_id=report_id) }}">Upload & Close</a>
+            {% else %}
+              ✅ Closed
+            {% endif %}
+          </td>
+
+          {# Closure evidence column #}
+          <td>
+            {% if row[-1] %}
+              <a href="{{ url_for('download_closure_file', report_id=report_id) }}" target="_blank">Download</a>
+            {% else %}
+              Not uploaded
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
   {% else %}
     <p style="text-align:center; color:#666;">No reports submitted yet.</p>
   {% endif %}
+
 </body>
 </html>
