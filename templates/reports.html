@@ -64,16 +64,16 @@
 <table>
     <thead>
         <tr>
-            {% for header in headers[1:] %}  {# skip ID header #}
+            {% for header in headers[1:] %}  {# Skip only the ID column #}
                 <th>{{ "Attachment" if header == "Filename" else header }}</th>
             {% endfor %}
         </tr>
     </thead>
     <tbody>
         {% for row in data %}
-            {% set report_id = row[0] %}
+            {% set report_id = row[0] %}  {# ID is row[0], skip displaying it but keep for actions #}
             <tr>
-                {% for i in range(1, row|length - 2) %}
+                {% for i in range(1, row|length - 2) %}  {# show all fields except filename and status #}
                     <td>{{ row[i] }}</td>
                 {% endfor %}
                 <td>
