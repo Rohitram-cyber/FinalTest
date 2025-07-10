@@ -64,41 +64,51 @@
 <table>
     <thead>
         <tr>
-            {% for header in headers[1:] %}  {# Skip only the ID column #}
+            {% for header in headers[1:] %}
                 <th>{{ "Attachment" if header == "Filename" else header }}</th>
             {% endfor %}
         </tr>
     </thead>
     <tbody>
-        <tbody>
-            {% for row in data %}
-            <tr>
-                {% set report_id = loop.index %}
+        {% for row in data %}
+        <tr>
+            {% set report_id = row[0] %}
 
-                {# Loop through all columns except attachment and status, which we customize below #}
-                {% for i in range(row|length - 2) %}
-                    <td>{{ row[i] }}</td>
-                {% endfor %}
+            {# Display fields except last 2 (status and closure_filename) #}
+            {% for i in range(1, row|length - 2) %}
+                <td>{{ row[i] }}</td>
+            {% endfor %}
 
-                <td>
-                    {% set filename = row[-2] %}
-                    {% if filename %}
-                        <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a> |
-                        <a href="{{ url_for('download_file', report_id=report_id) }}">Download</a>
-                    {% else %}
-                        No file
-                    {% endif %}
-                </td>
+            {# File Attachment column #}
+            <td>
+                {% set filename = row[-3] %}
+                {% if filename %}
+                    <a href="{{ url_for('uploaded_file', filename=filename) }}" target="_blank">View</a> |
+                    <a href="{{ url_for('download_file', report_id=report_id) }}">Download</a>
+                {% else %}
+                    No file
+                {% endif %}
+            </td>
 
-                <td>
-                    {% if row[-1] != 'Closed' %}
-                        <a href="/close/{{ report_id }}" onclick="return confirm('Are you sure to close this report?');">Open Report</a>
-                    {% else %}
-                        ✅ Report Closed
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}  
+            {# Status / Close report button #}
+            <td>
+                {% if row[-2] != 'Closed' %}
+                    <a href="{{ url_for('close_report', report_id=report_id) }}">Upload & Close</a>
+                {% else %}
+                    ✅ Closed
+                {% endif %}
+            </td>
+
+            {# Closure Evidence Download #}
+            <td>
+                {% if row[-1] %}
+                    <a href="{{ url_for('download_closure_file', report_id=report_id) }}">Download</a>
+                {% else %}
+                    Not uploaded
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
 
