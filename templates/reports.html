@@ -70,12 +70,16 @@
         </tr>
     </thead>
     <tbody>
-        {% for row in data %}
-            {% set report_id = row[0] %}  {# ID is row[0], skip displaying it but keep for actions #}
+        <tbody>
+            {% for row in data %}
             <tr>
-                {% for i in range(1, row|length - 2) %}  {# show all fields except filename and status #}
+                {% set report_id = loop.index %}
+
+                {# Loop through all columns except attachment and status, which we customize below #}
+                {% for i in range(row|length - 2) %}
                     <td>{{ row[i] }}</td>
                 {% endfor %}
+
                 <td>
                     {% set filename = row[-2] %}
                     {% if filename %}
@@ -85,15 +89,16 @@
                         No file
                     {% endif %}
                 </td>
+
                 <td>
                     {% if row[-1] != 'Closed' %}
-                        <a href="/close/{{ report_id }}" onclick="return confirm('Are you sure to close this report?');">Opened Report (Click to Close)</a>
+                        <a href="/close/{{ report_id }}" onclick="return confirm('Are you sure to close this report?');">Open Report</a>
                     {% else %}
                         ✅ Report Closed
                     {% endif %}
                 </td>
             </tr>
-        {% endfor %}
+        {% endfor %}  
     </tbody>
 </table>
 
