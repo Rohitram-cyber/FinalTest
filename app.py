@@ -32,9 +32,9 @@ if not os.path.exists(CSV_FILE):
     with open(CSV_FILE, "w", newline='') as f:
         writer = csv.writer(f)
         writer.writerow([
-            "Full Name", "Email", "Date", "Time", "Shift", "Department",
-            "Report Type", "Responsible Person", "Location", "Sub-location",
-            "Hazard Description", "Filename"
+            "Full Name", "Mobile No", "Date", "Time", "Shift", "Department",
+            "Report Type", "Concern Department for Compliance of Hazard", "Location", "Sub-location",
+            "Hazard Description", "filename"
         ])
 
 # DB setup
@@ -59,8 +59,8 @@ def save_report_to_db(data, file_blob):
     with sqlite3.connect("reports.db") as conn:
         conn.execute('''
             INSERT INTO reports (
-                fullname, email, date, time, shift, department, report_type,
-                responsible, location, sublocation, description, filename, file_blob
+                fullname, mobile, date, time, shift, department, report_type,
+                concern, location, sublocation, description, filename, file_blob
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', data + [file_blob])
 
@@ -124,8 +124,8 @@ def index():
 def show_reports():
     with sqlite3.connect("reports.db") as conn:
         rows = conn.execute("""
-            SELECT id, fullname, mobile, date, time, shift, department,
-                   report_type, responsible, location, sublocation,
+            SELECT fullname, mobile, date, time, shift, department,
+                   report_type, concern, location, sublocation,
                    description, filename, status
             FROM reports
         """).fetchall()
