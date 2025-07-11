@@ -94,6 +94,9 @@ def index():
 
             print("Submitted:", submitted_datetime, "| Now:", now)
 
+            print("DEBUG -> Submitted:", submitted_datetime)
+            print("DEBUG -> Server now:", now)
+
             if submitted_datetime > now + timedelta(minutes=1):
                 flash("⚠️ Future date/time not allowed.")
                 return redirect(url_for("index"))
