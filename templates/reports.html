@@ -124,7 +124,7 @@
           {# Attachment column #}
           <td>
             {% if row[-3] %}
-              <a href="{{ url_for('download_file', report_id=report_id) }}" target="_blank">View</a> |
+              <a href="{{ url_for('download_file', report_id=report_id) }}?mode=view" target="_blank">View</a> |
               <a href="{{ url_for('download_file', report_id=report_id) }}">Download</a>
             {% else %}
               No file
