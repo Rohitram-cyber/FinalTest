@@ -115,7 +115,7 @@
         <tr>
           {% set report_id = row[0] %}
 
-          {# Basic info fields (1–12) #}
+          {# Fields 1 to 12 #}
           {% for i in range(1, 13) %}
             <td>{{ row[i] }}</td>
           {% endfor %}
@@ -139,7 +139,7 @@
             {% endif %}
           </td>
 
-          {# Closure Evidence column (15 - closure_filename) #}
+          {# Closure Evidence column (15) #}
           <td>
             {% if row[14] == 'Closed' and row[15] %}
               <a href="{{ url_for('download_closure_file', report_id=report_id, mode='view') }}" target="_blank">View</a> |
@@ -149,10 +149,10 @@
             {% endif %}
           </td>
 
-          {# Closure Comment column (17) #}
+          {# Closure Comment column (16) #}
           <td>
-            {% if row[17] %}
-              {{ row[17] | replace('\n', '<br>') | safe }}
+            {% if row[16] %}
+              {{ row[16] | replace('\n', '<br>') | safe }}
             {% else %}
               Not available
             {% endif %}
