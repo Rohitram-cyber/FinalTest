@@ -134,7 +134,7 @@
           {# Status column with close option #}
           <td>
             {% if row[-2] != 'Closed' %}
-              <a href="{{ url_for('close_report', report_id=report_id) }}">Upload & Close</a>
+              <a href="{{ url_for('close_report', report_id=report_id) }}">Open - Click to Upload & Close</a>
             {% else %}
               ✅ Closed
             {% endif %}
