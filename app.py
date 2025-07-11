@@ -1,5 +1,5 @@
 import os, csv, sqlite3, io
-from flask import Flask, render_template, request, redirect, url_for, send_file, send_from_directory, flash
+from flask import Flask, render_template, request, redirect, url_for, send_file, flash
 from werkzeug.utils import secure_filename
 from flask_mail import Mail, Message
 from datetime import datetime, timedelta
@@ -9,7 +9,7 @@ import pandas as pd
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "defaultsecret")
 
-# Email config
+# Email configuration
 app.config.update(
     MAIL_SERVER='smtp.gmail.com',
     MAIL_PORT=587,
@@ -20,26 +20,27 @@ app.config.update(
 )
 mail = Mail(app)
 
-# Upload settings
+# File upload settings
 UPLOAD_FOLDER = 'uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'docx'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 MB
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# DB setup
+# Initialize the database
 def init_db():
     with sqlite3.connect("reports.db") as conn:
         conn.execute('''
             CREATE TABLE IF NOT EXISTS reports (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                fullname TEXT, mobile TEXT, email TEXT, date TEXT, time TEXT,
+                fullname TEXT, mobile TEXT, date TEXT, time TEXT,
                 shift TEXT, department TEXT, report_type TEXT,
                 responsible TEXT, location TEXT, sublocation TEXT,
                 description TEXT, filename TEXT, file_blob BLOB,
                 status TEXT DEFAULT 'Open',
                 closure_filename TEXT,
-                closure_blob BLOB
+                closure_blob BLOB,
+                closure_comment TEXT
             )
         ''')
 init_db()
@@ -61,14 +62,13 @@ def save_report_to_db(data, file_blob):
 def index():
     if request.method == "POST":
         uploaded_file = request.files.get("file")
-        filename = ""
-        file_blob = None
+        filename, file_blob = "", None
 
         if uploaded_file and allowed_file(uploaded_file.filename):
             filename = secure_filename(uploaded_file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            uploaded_file.save(file_path)
-            with open(file_path, "rb") as f:
+            path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            uploaded_file.save(path)
+            with open(path, "rb") as f:
                 file_blob = f.read()
 
         form_data = {
@@ -86,54 +86,39 @@ def index():
             "filename": filename
         }
 
-        # Validate date and time
-        
-        # inside your POST route
         try:
-            submitted_datetime = datetime.strptime(f"{form_data['date']} {form_data['time']}", "%Y-%m-%d %H:%M")
-
-            # Convert both submitted and current server time to IST
             ist = pytz.timezone("Asia/Kolkata")
-            submitted_datetime = ist.localize(submitted_datetime)
+            submitted = ist.localize(datetime.strptime(f"{form_data['date']} {form_data['time']}", "%Y-%m-%d %H:%M"))
             now = datetime.now(ist)
 
-            print("DEBUG -> Submitted (IST):", submitted_datetime)
-            print("DEBUG -> Server Now (IST):", now)
-
-            if submitted_datetime > now + timedelta(minutes=1):
+            if submitted > now + timedelta(minutes=1):
                 flash("⚠️ Future date/time not allowed.")
                 return redirect(url_for("index"))
-
-            if (now - submitted_datetime).days > 7:
+            if (now - submitted).days > 7:
                 flash("⚠️ Only reports from the past 7 days are allowed.")
                 return redirect(url_for("index"))
 
-        except Exception as e:
+        except Exception:
             flash("⚠️ Invalid date or time format.")
             return redirect(url_for("index"))
 
-        # Save to CSV
-        with open("reports.csv", "a", newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(form_data.values())
+        with open("reports.csv", "a", newline='') as f:
+            csv.writer(f).writerow(form_data.values())
 
-        # Save to DB
         save_report_to_db(list(form_data.values()), file_blob)
 
-        # Email
+        # Send Email
         try:
             body = "\n".join([f"{k.replace('_', ' ').title()}: {v}" for k, v in form_data.items() if k != "filename"])
-            msg = Message(subject="New Hazard Report Submission",
-                          recipients=["rohit29ram@gmail.com"],
-                          body=f"New Hazard Report Submitted:\n\n{body}")
+            msg = Message("New Hazard Report Submission", recipients=["rohit29ram@gmail.com"], body=body)
             if uploaded_file:
                 uploaded_file.stream.seek(0)
                 msg.attach(uploaded_file.filename, uploaded_file.content_type, uploaded_file.read())
             mail.send(msg)
         except Exception as e:
-            print("Error sending email:", e)
+            print("Email Error:", e)
 
-        flash("✅Report submitted successfully!")
+        flash("✅ Report submitted successfully!")
         return redirect(url_for("index"))
 
     return render_template("index.html", time=datetime.now().timestamp())
@@ -144,33 +129,42 @@ def show_reports():
         rows = conn.execute("""
             SELECT id, fullname, mobile, date, time, shift, department,
                    report_type, responsible, location, sublocation,
-                   description, filename, status, closure_filename
+                   description, filename, status, closure_filename, closure_comment
             FROM reports
         """).fetchall()
-    headers = ["ID", "Full Name", "Mobile", "Date", "Time", "Shift", "Department", "Report Type", "Concern Dept", "Location", "Sub-location", "Description", "Attachment", "Status", "Closure Evidence"]
+    headers = ["ID", "Full Name", "Mobile", "Date", "Time", "Shift", "Department", "Report Type", "Concern Dept", "Location", "Sub-location", "Description", "Attachment", "Status", "Closure Evidence", "Closure Comment"]
     return render_template("reports.html", headers=headers, data=rows)
 
 @app.route("/close/<int:report_id>", methods=["GET", "POST"])
 def close_report(report_id):
     if request.method == "POST":
         file = request.files.get("closure_file")
+        closure_comment = request.form.get("closure_comment", "").strip()
+
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_blob = file.read()
+
             with sqlite3.connect("reports.db") as conn:
                 conn.execute("""
                     UPDATE reports SET status = 'Closed',
-                    closure_filename = ?, closure_blob = ?
+                    closure_filename = ?, closure_blob = ?, closure_comment = ?
                     WHERE id = ?
-                """, (filename, file_blob, report_id))
-            flash("✅ Report closed with closure file.")
+                """, (filename, file_blob, closure_comment, report_id))
+            flash("✅ Report closed with closure file and comment.")
         else:
             flash("⚠️ Please upload a valid file.")
         return redirect(url_for("show_reports"))
+
     return '''
-    <h3>Upload Closure File</h3>
+    <h3>Upload Closure File & Comment</h3>
     <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="closure_file" required>
+        <label>Closure File:</label><br>
+        <input type="file" name="closure_file" required><br><br>
+
+        <label>Closure Comment:</label><br>
+        <textarea name="closure_comment" rows="4" cols="50" placeholder="Enter closure remarks..." required></textarea><br><br>
+
         <button type="submit">Upload & Close Report</button>
     </form>
     '''
@@ -181,24 +175,16 @@ def download_file(report_id):
     with sqlite3.connect("reports.db") as conn:
         row = conn.execute("SELECT filename, file_blob FROM reports WHERE id = ?", (report_id,)).fetchone()
     if row and row[1]:
-        return send_file(
-            io.BytesIO(row[1]),
-            download_name=row[0],
-            as_attachment=(mode != "view")
-        )
+        return send_file(io.BytesIO(row[1]), download_name=row[0], as_attachment=(mode != "view"))
     return "File not found."
 
 @app.route("/download-closure/<int:report_id>")
 def download_closure_file(report_id):
-    mode = request.args.get("mode", "download")  # default is download
+    mode = request.args.get("mode", "download")
     with sqlite3.connect("reports.db") as conn:
         row = conn.execute("SELECT closure_filename, closure_blob FROM reports WHERE id = ?", (report_id,)).fetchone()
     if row and row[1]:
-        return send_file(
-            io.BytesIO(row[1]),
-            download_name=row[0],
-            as_attachment=(mode != "view")
-        )
+        return send_file(io.BytesIO(row[1]), download_name=row[0], as_attachment=(mode != "view"))
     return "Closure file not found.", 404
 
 @app.route("/download-excel")
