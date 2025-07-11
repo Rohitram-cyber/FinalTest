@@ -185,10 +185,15 @@ def download_file(report_id):
 
 @app.route("/download-closure/<int:report_id>")
 def download_closure_file(report_id):
+    mode = request.args.get("mode", "download")  # default is download
     with sqlite3.connect("reports.db") as conn:
         row = conn.execute("SELECT closure_filename, closure_blob FROM reports WHERE id = ?", (report_id,)).fetchone()
     if row and row[1]:
-        return send_file(io.BytesIO(row[1]), download_name=row[0], as_attachment=True)
+        return send_file(
+            io.BytesIO(row[1]),
+            download_name=row[0],
+            as_attachment=(mode != "view")
+        )
     return "Closure file not found.", 404
 
 @app.route("/download-excel")
