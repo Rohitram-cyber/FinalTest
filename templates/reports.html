@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Submitted Reports</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -140,7 +139,7 @@
             {% endif %}
           </td>
 
-          {# Closure Evidence column (15) #}
+          {# Closure Evidence column (15 - closure_filename) #}
           <td>
             {% if row[14] == 'Closed' and row[15] %}
               <a href="{{ url_for('download_closure_file', report_id=report_id, mode='view') }}" target="_blank">View</a> |
@@ -150,10 +149,10 @@
             {% endif %}
           </td>
 
-          {# Closure Comment column (16) #}
+          {# Closure Comment column (17) #}
           <td>
-            {% if row[16] %}
-              {{ row[16] | replace('\n', '<br>') | safe }}
+            {% if row[17] %}
+              {{ row[17] | replace('\n', '<br>') | safe }}
             {% else %}
               Not available
             {% endif %}
