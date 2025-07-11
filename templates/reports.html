@@ -116,39 +116,42 @@
         <tr>
           {% set report_id = row[0] %}
 
-          {# Main form data fields (excluding ID and last 3) #}
-          {% for i in range(1, row|length - 3) %}
+          {# Report fields from index 1 to index before attachment #}
+          {% for i in range(1, 13) %}
             <td>{{ row[i] }}</td>
           {% endfor %}
 
           {# Attachment column #}
           <td>
-            {% if row[-3] %}
-              <a href="{{ url_for('download_file', report_id=report_id) }}?mode=view" target="_blank">View</a> |
+            {% if row[13] %}
+              <a href="{{ url_for('download_file', report_id=report_id, mode='view') }}" target="_blank">View</a> |
               <a href="{{ url_for('download_file', report_id=report_id) }}">Download</a>
             {% else %}
               No file
             {% endif %}
           </td>
 
-          {# Status column with close option #}
+          {# Status column with link if open #}
           <td>
-            {% if row[-2] != 'Closed' %}
+            {% if row[14] != 'Closed' %}
               <a href="{{ url_for('close_report', report_id=report_id) }}">Open - Click to Upload & Close</a>
             {% else %}
               ✅ Closed
             {% endif %}
           </td>
 
-          {# Closure evidence column #}
+          {# Closure Evidence column #}
           <td>
-            {% if row[-1] %}
-               <a href="{{ url_for('download_closure_file', report_id=report_id) }}?mode=view" target="_blank" title="View closure file">View</a> |
-               <a href="{{ url_for('download_closure_file', report_id=report_id) }}" download title="Download closure file">Download</a>
+            {% if row[15] %}
+              <a href="{{ url_for('download_closure_file', report_id=report_id, mode='view') }}" target="_blank">View</a> |
+              <a href="{{ url_for('download_closure_file', report_id=report_id) }}">Download</a>
             {% else %}
               Not uploaded
             {% endif %}
           </td>
+
+          {# Closure Comment column #}
+          <td>{{ row[16] if row[16] else "Not available" }}</td>
         </tr>
         {% endfor %}
       </tbody>
