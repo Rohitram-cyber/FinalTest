@@ -142,7 +142,7 @@
 
           {# Closure Evidence column (15) #}
           <td>
-            {% if row[15] %}
+            {% if row[14] == 'Closed' and row[15] %}
               <a href="{{ url_for('download_closure_file', report_id=report_id, mode='view') }}" target="_blank">View</a> |
               <a href="{{ url_for('download_closure_file', report_id=report_id) }}">Download</a>
             {% else %}
