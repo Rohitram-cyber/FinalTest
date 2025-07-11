@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, send_file,
 from werkzeug.utils import secure_filename
 from flask_mail import Mail, Message
 from datetime import datetime, timedelta
+import pytz
 import pandas as pd
 
 app = Flask(__name__)
@@ -90,12 +91,14 @@ def index():
         # inside your POST route
         try:
             submitted_datetime = datetime.strptime(f"{form_data['date']} {form_data['time']}", "%Y-%m-%d %H:%M")
-            now = datetime.now()
 
-            print("Submitted:", submitted_datetime, "| Now:", now)
+            # Convert both submitted and current server time to IST
+            ist = pytz.timezone("Asia/Kolkata")
+            submitted_datetime = ist.localize(submitted_datetime)
+            now = datetime.now(ist)
 
-            print("DEBUG -> Submitted:", submitted_datetime)
-            print("DEBUG -> Server now:", now)
+            print("DEBUG -> Submitted (IST):", submitted_datetime)
+            print("DEBUG -> Server Now (IST):", now)
 
             if submitted_datetime > now + timedelta(minutes=1):
                 flash("⚠️ Future date/time not allowed.")
