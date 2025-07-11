@@ -9,7 +9,7 @@ import pandas as pd
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "defaultsecret")
 
-# Email configuration
+# Email Configuration
 app.config.update(
     MAIL_SERVER='smtp.gmail.com',
     MAIL_PORT=587,
@@ -20,14 +20,14 @@ app.config.update(
 )
 mail = Mail(app)
 
-# File upload settings
+# Upload Config
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'docx'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 MB
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Initialize the database
+# ✅ DB Initialization
 def init_db():
     with sqlite3.connect("reports.db") as conn:
         conn.execute('''
@@ -90,14 +90,12 @@ def index():
             ist = pytz.timezone("Asia/Kolkata")
             submitted = ist.localize(datetime.strptime(f"{form_data['date']} {form_data['time']}", "%Y-%m-%d %H:%M"))
             now = datetime.now(ist)
-
             if submitted > now + timedelta(minutes=1):
                 flash("⚠️ Future date/time not allowed.")
                 return redirect(url_for("index"))
             if (now - submitted).days > 7:
                 flash("⚠️ Only reports from the past 7 days are allowed.")
                 return redirect(url_for("index"))
-
         except Exception:
             flash("⚠️ Invalid date or time format.")
             return redirect(url_for("index"))
@@ -107,7 +105,6 @@ def index():
 
         save_report_to_db(list(form_data.values()), file_blob)
 
-        # Send Email
         try:
             body = "\n".join([f"{k.replace('_', ' ').title()}: {v}" for k, v in form_data.items() if k != "filename"])
             msg = Message("New Hazard Report Submission", recipients=["rohit29ram@gmail.com"], body=body)
@@ -141,6 +138,8 @@ def show_reports():
     ]
 
     return render_template("reports.html", headers=headers, data=rows)
+
+# ✅ Route for Closing Report
 @app.route("/close/<int:report_id>", methods=["GET", "POST"])
 def close_report(report_id):
     if request.method == "POST":
@@ -151,6 +150,11 @@ def close_report(report_id):
             filename = secure_filename(file.filename)
             file_blob = file.read()
 
+            print(f"[DEBUG] Closing report ID: {report_id}")
+            print(f"[DEBUG] Closure Filename: {filename}")
+            print(f"[DEBUG] File Size: {len(file_blob)}")
+            print(f"[DEBUG] Closure Comment: {closure_comment}")
+
             with sqlite3.connect("reports.db") as conn:
                 conn.execute("""
                     UPDATE reports SET
@@ -160,7 +164,6 @@ def close_report(report_id):
                         closure_comment = ?
                     WHERE id = ?
                 """, (filename, file_blob, closure_comment, report_id))
-
             flash("✅ Report closed successfully with closure comment.")
         else:
             flash("⚠️ Please upload a valid file.")
@@ -171,13 +174,21 @@ def close_report(report_id):
     <form method="POST" enctype="multipart/form-data">
         <label>Closure File:</label><br>
         <input type="file" name="closure_file" required><br><br>
-
         <label>Closure Comment:</label><br>
-        <textarea name="closure_comment" rows="4" cols="50" placeholder="Enter closure remarks..." required></textarea><br><br>
-
+        <textarea name="closure_comment" rows="4" cols="50" required></textarea><br><br>
         <button type="submit">Upload & Close Report</button>
     </form>
     '''
+
+# ✅ Debugging Route
+@app.route("/debug/<int:report_id>")
+def debug_report(report_id):
+    with sqlite3.connect("reports.db") as conn:
+        row = conn.execute("""
+            SELECT id, status, closure_filename, closure_comment, length(closure_blob)
+            FROM reports WHERE id = ?
+        """, (report_id,)).fetchone()
+    return f"<pre>{row}</pre>"
 
 @app.route("/download/<int:report_id>")
 def download_file(report_id):
