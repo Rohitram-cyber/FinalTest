@@ -177,10 +177,15 @@ def close_report(report_id):
 
 @app.route("/download/<int:report_id>")
 def download_file(report_id):
+    mode = request.args.get("mode", "download")
     with sqlite3.connect("reports.db") as conn:
         row = conn.execute("SELECT filename, file_blob FROM reports WHERE id = ?", (report_id,)).fetchone()
     if row and row[1]:
-        return send_file(io.BytesIO(row[1]), download_name=row[0], as_attachment=True)
+        return send_file(
+            io.BytesIO(row[1]),
+            download_name=row[0],
+            as_attachment=(mode != "view")
+        )
     return "File not found."
 
 @app.route("/download-closure/<int:report_id>")
