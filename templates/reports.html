@@ -116,14 +116,14 @@
         <tr>
           {% set report_id = row[0] %}
 
-          {# Basic report fields (index 1 to 12) #}
+          {# Display columns 1 to 12: report info fields #}
           {% for i in range(1, 13) %}
             <td>{{ row[i] }}</td>
           {% endfor %}
 
-          {# Main Attachment column #}
+          {# Attachment column (index 12) #}
           <td>
-            {% if row[13] %}
+            {% if row[12] %}
               <a href="{{ url_for('download_file', report_id=report_id, mode='view') }}" target="_blank">View</a> |
               <a href="{{ url_for('download_file', report_id=report_id) }}">Download</a>
             {% else %}
@@ -131,18 +131,18 @@
             {% endif %}
           </td>
 
-          {# Status column #}
+          {# Status column (index 13) #}
           <td>
-            {% if row[14] != 'Closed' %}
+            {% if row[13] != 'Closed' %}
               <a href="{{ url_for('close_report', report_id=report_id) }}">Open - Click to Upload & Close</a>
             {% else %}
               ✅ Closed
             {% endif %}
           </td>
 
-          {# Closure Evidence column #}
+          {# Closure Evidence (filename) - index 14 #}
           <td>
-            {% if row[15] %}
+            {% if row[14] %}
               <a href="{{ url_for('download_closure_file', report_id=report_id, mode='view') }}" target="_blank">View</a> |
               <a href="{{ url_for('download_closure_file', report_id=report_id) }}">Download</a>
             {% else %}
@@ -150,7 +150,7 @@
             {% endif %}
           </td>
 
-          {# Closure Comment column #}
+          {# Closure Comment (index 16) #}
           <td>
             {% if row[16] %}
               {{ row[16] | replace('\n', '<br>') | safe }}
