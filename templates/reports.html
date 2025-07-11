@@ -151,7 +151,13 @@
           </td>
 
           {# Closure Comment column #}
-          <td>{{ row[16] if row[16] else "Not available" }}</td>
+          <td>
+            {% if row[-1] %}
+              {{ row[-1] }}
+            {% else %}
+              Not available
+            {% endif %}
+          </td>
         </tr>
         {% endfor %}
       </tbody>
