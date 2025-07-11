@@ -147,11 +147,15 @@ def close_report(report_id):
 
             with sqlite3.connect("reports.db") as conn:
                 conn.execute("""
-                    UPDATE reports SET status = 'Closed',
-                    closure_filename = ?, closure_blob = ?, closure_comment = ?
+                    UPDATE reports SET
+                        status = 'Closed',
+                        closure_filename = ?,
+                        closure_blob = ?,
+                        closure_comment = ?
                     WHERE id = ?
                 """, (filename, file_blob, closure_comment, report_id))
-            flash("✅ Report closed with closure file and comment.")
+
+            flash("✅ Report closed successfully with closure comment.")
         else:
             flash("⚠️ Please upload a valid file.")
         return redirect(url_for("show_reports"))
