@@ -130,11 +130,16 @@ def show_reports():
             SELECT id, fullname, mobile, date, time, shift, department,
                    report_type, responsible, location, sublocation,
                    description, filename, status,
-                   closure_filename, closure_blob, closure_comment
+                   closure_filename, closure_comment
             FROM reports
         """).fetchall()
 
-    headers = ["ID", "Full Name", "Mobile", "Date", "Time", "Shift", "Department", "Report Type", "Concern Dept", "Location", "Sub-location", "Description", "Attachment", "Status", "Closure Evidence", "Closure Blob", "Closure Comment"]
+    headers = [
+        "ID", "Full Name", "Mobile", "Date", "Time", "Shift", "Department",
+        "Report Type", "Concern Dept", "Location", "Sub-location",
+        "Description", "Attachment", "Status", "Closure Evidence", "Closure Comment"
+    ]
+
     return render_template("reports.html", headers=headers, data=rows)
 
 @app.route("/close/<int:report_id>", methods=["GET", "POST"])
