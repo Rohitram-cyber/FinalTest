@@ -129,9 +129,11 @@ def show_reports():
         rows = conn.execute("""
             SELECT id, fullname, mobile, date, time, shift, department,
                    report_type, responsible, location, sublocation,
-                   description, filename, status, closure_filename, closure_comment
+                   description, filename, status,
+                   closure_filename, closure_comment
             FROM reports
         """).fetchall()
+
     headers = ["ID", "Full Name", "Mobile", "Date", "Time", "Shift", "Department", "Report Type", "Concern Dept", "Location", "Sub-location", "Description", "Attachment", "Status", "Closure Evidence", "Closure Comment"]
     return render_template("reports.html", headers=headers, data=rows)
 
