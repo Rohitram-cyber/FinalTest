@@ -130,33 +130,34 @@
               No file
             {% endif %}
           </td>
+            {# Status column with close option #}
+            <td>
+              {% if row[14] != 'Closed' %}
+                <a href="{{ url_for('close_report', report_id=report_id) }}">Open - Click to Upload & Close</a>
+              {% else %}
+                ✅ Closed
+              {% endif %}
+            </td>
 
-          {# Status column with link if open #}
-          <td>
-            {% if row[14] != 'Closed' %}
-              <a href="{{ url_for('close_report', report_id=report_id) }}">Open - Click to Upload & Close</a>
-            {% else %}
-              ✅ Closed
-            {% endif %}
-          </td>
+            {# Closure Evidence column #}
+            <td>
+              {% if row[15] %}
+                <a href="{{ url_for('download_closure_file', report_id=report_id, mode='view') }}" target="_blank">View</a> |
+                <a href="{{ url_for('download_closure_file', report_id=report_id) }}">Download</a>
+              {% else %}
+                Not uploaded
+              {% endif %}
+            </td>
 
-          {# Closure Evidence column #}
-          <td>
-            {% if row[15] %}
-              <a href="{{ url_for('download_closure_file', report_id=report_id, mode='view') }}" target="_blank">View</a> |
-              <a href="{{ url_for('download_closure_file', report_id=report_id) }}">Download</a>
+            {# Closure Comment column #}
+            <td>
+              {% if row[16] %}
+                {{ row[16] }}
             {% else %}
-              Not uploaded
-            {% endif %}
-          </td>
-
-          {# Closure Comment column #}
-          <td>
-            {% if row[-1] %}
-              {{ row[-1] }}
-            {% else %}
-              Not available
-            {% endif %}
+                Not available
+              {% endif %}
+            </td>
+          
           </td>
         </tr>
         {% endfor %}
