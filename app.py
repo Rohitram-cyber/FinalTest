@@ -153,36 +153,34 @@ def close_report(report_id):
             filename = secure_filename(file.filename)
             file_blob = file.read()
 
-            print(f"[DEBUG] Closing report ID: {report_id}")
-            print(f"[DEBUG] Closure Filename: {filename}")
-            print(f"[DEBUG] File Size: {len(file_blob) if file_blob else 0}")
-            print(f"[DEBUG] Closure Comment: {closure_comment}")
-
             if not file_blob:
                 flash("⚠️ Closure file is empty or could not be read.")
-            else:
-                with sqlite3.connect("reports.db") as conn:
-                    cursor = conn.execute("""
-                        UPDATE reports SET
-                            status = 'Closed',
-                            closure_filename = ?,
-                            closure_blob = ?,
-                            closure_comment = ?
-                        WHERE id = ?
-                    """, (filename, file_blob, closure_comment, report_id))
-    
-                    if cursor.rowcount == 0:
-                        flash("❌ ERROR: Report not found or update failed.")
-                        print("[ERROR] Closure update failed for report ID:", report_id)
-                    else:
-                        flash("✅ Report closed successfully with closure comment.")
-                        print("[SUCCESS] Closure update successful for report ID:", report_id)
+                return redirect(url_for("show_reports"))
+
+            with sqlite3.connect("reports.db") as conn:
+                cursor = conn.execute("""
+                    UPDATE reports SET
+                        status = 'Closed',
+                        closure_filename = ?,
+                        closure_blob = ?,
+                        closure_comment = ?
+                    WHERE id = ?
+                """, (filename, file_blob, closure_comment, report_id))
+
+                conn.commit()  # ✅ Ensure changes are committed
+
+                if cursor.rowcount == 0:
+                    flash("❌ Update failed: Report not found.")
+                    print(f"[ERROR] No report updated for ID {report_id}")
+                else:
+                    flash("✅ Report closed successfully.")
+                    print(f"[SUCCESS] Report {report_id} marked as Closed")
         else:
-            flash("⚠️ Please upload a valid file.")
+            flash("⚠️ Invalid or missing file.")
 
         return redirect(url_for("show_reports"))
 
-    # GET request
+    # GET form
     return '''
     <h3>Upload Closure File & Comment</h3>
     <form method="POST" enctype="multipart/form-data">
