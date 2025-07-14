@@ -173,10 +173,11 @@ def close_report(report_id):
                         closure_comment = ?
                     WHERE id = ?
                 """, (filename, file_blob, closure_comment, report_id))
+
             flash("✅ Report closed successfully with closure comment.")
         else:
             flash("⚠️ Please upload a valid file.")
-        
+
         return redirect(url_for("show_reports"))
 
     return '''
