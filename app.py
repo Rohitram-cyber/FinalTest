@@ -150,9 +150,15 @@ def close_report(report_id):
             filename = secure_filename(file.filename)
             file_blob = file.read()
 
-            print(">>>>> CLOSURE FILE NAME:", filename, file=sys.stderr)
-            print(">>>>> CLOSURE FILE SIZE:", len(file_blob), file=sys.stderr)
-            print(">>>>> Closure Comment:", closure_comment, file=sys.stderr)
+             print(f"[DEBUG] Closing report ID: {report_id}")
+             print(f"[DEBUG] Closure Filename: {filename}")
+    
+            if file_blob:
+                print(f"[DEBUG] File Size: {len(file_blob)}")
+            else:
+                print("[ERROR] file_blob is None (Upload Failed)")
+    
+                print(f"[DEBUG] Closure Comment: {closure_comment}")
 
             with sqlite3.connect("reports.db") as conn:
                 conn.execute("""
