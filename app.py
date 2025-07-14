@@ -173,6 +173,7 @@ def close_report(report_id):
                         closure_comment = ?
                     WHERE id = ?
                 """, (filename, file_blob, closure_comment, report_id))
+                conn.commit()
 
             flash("✅ Report closed successfully with closure comment.")
         else:
