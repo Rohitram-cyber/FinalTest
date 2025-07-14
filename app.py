@@ -239,6 +239,12 @@ def force_init_db():
     init_db()
     return "✅ Database initialized with `reports` table."
 
+@app.route("/debug-all")
+def debug_all():
+    with sqlite3.connect("reports.db") as conn:
+        rows = conn.execute("SELECT * FROM reports").fetchall()
+    return "<pre>" + "\n".join(str(r) for r in rows) + "</pre>"
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
