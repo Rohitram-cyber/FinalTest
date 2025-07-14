@@ -120,7 +120,7 @@
             <td>{{ row[i] }}</td>
           {% endfor %}
 
-          {# Attachment column (13) - row[13] #}
+          {# Attachment column (13) #}
           <td>
             {% if row[13] %}
               <a href="{{ url_for('download_file', report_id=report_id, mode='view') }}" target="_blank">View</a> |
@@ -130,7 +130,7 @@
             {% endif %}
           </td>
 
-          {# Status column (14) - row[14] #}
+          {# Status column (14) #}
           <td>
             {% if row[14]|default('')|trim != 'Closed' %}
               <a href="{{ url_for('close_report', report_id=report_id) }}">Open - Click to Upload & Close</a>
@@ -139,7 +139,7 @@
             {% endif %}
           </td>
 
-          {# Closure Evidence column (15 = blob) #}
+          {# Closure Evidence column (15) #}
           <td>
             {% if row[14]|default('')|trim == 'Closed' and row[15] %}
               <a href="{{ url_for('download_closure_file', report_id=report_id, mode='view') }}" target="_blank">View</a> |
