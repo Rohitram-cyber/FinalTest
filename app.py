@@ -234,6 +234,11 @@ def download_csv():
 def download_db():
     return send_file("reports.db", as_attachment=True)
 
+@app.route("/init-db")
+def force_init_db():
+    init_db()
+    return "✅ Database initialized with `reports` table."
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
