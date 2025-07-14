@@ -165,6 +165,7 @@ def close_report(report_id):
                 return redirect(url_for("show_reports"))
 
             with sqlite3.connect("reports.db") as conn:
+                print(f"[DB] Updating report ID {report_id} with closure info...")
                 conn.execute("""
                     UPDATE reports SET
                         status = 'Closed',
