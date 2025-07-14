@@ -146,42 +146,37 @@ def close_report(report_id):
         file = request.files.get("closure_file")
         closure_comment = request.form.get("closure_comment", "").strip()
 
+        filename = ""
+        file_blob = None
+
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_blob = file.read()
 
             print(f"[DEBUG] Closing report ID: {report_id}")
             print(f"[DEBUG] Closure Filename: {filename}")
-
-            if file_blob:
-                print(f"[DEBUG] File Size: {len(file_blob)}")
-            else:
-                print("[ERROR] file_blob is None (Upload Failed)")
-
+            print(f"[DEBUG] File Size: {len(file_blob) if file_blob else 0}")
             print(f"[DEBUG] Closure Comment: {closure_comment}")
 
             if not file_blob:
                 flash("⚠️ Closure file is empty or could not be read.")
-                return redirect(url_for("show_reports"))
-
-            with sqlite3.connect("reports.db") as conn:
-                print(f"[DB] Updating report ID {report_id} with closure info...")
-                conn.execute("""
-                    UPDATE reports SET
-                        status = 'Closed',
-                        closure_filename = ?,
-                        closure_blob = ?,
-                        closure_comment = ?
-                    WHERE id = ?
-                """, (filename, file_blob, closure_comment, report_id))
-                conn.commit()
-
-            flash("✅ Report closed successfully with closure comment.")
+            else:
+                with sqlite3.connect("reports.db") as conn:
+                    conn.execute("""
+                        UPDATE reports SET
+                            status = 'Closed',
+                            closure_filename = ?,
+                            closure_blob = ?,
+                            closure_comment = ?
+                        WHERE id = ?
+                    """, (filename, file_blob, closure_comment, report_id))
+                flash("✅ Report closed successfully with closure comment.")
         else:
             flash("⚠️ Please upload a valid file.")
 
         return redirect(url_for("show_reports"))
 
+    # GET request
     return '''
     <h3>Upload Closure File & Comment</h3>
     <form method="POST" enctype="multipart/form-data">
@@ -192,7 +187,7 @@ def close_report(report_id):
         <button type="submit">Upload & Close Report</button>
     </form>
     '''
-
+    
 # ✅ Debugging Route
 @app.route("/debug/<int:report_id>")
 def debug_report(report_id):
