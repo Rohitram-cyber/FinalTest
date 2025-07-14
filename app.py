@@ -162,7 +162,7 @@ def close_report(report_id):
                 flash("⚠️ Closure file is empty or could not be read.")
             else:
                 with sqlite3.connect("reports.db") as conn:
-                    conn.execute("""
+                    cursor = conn.execute("""
                         UPDATE reports SET
                             status = 'Closed',
                             closure_filename = ?,
@@ -170,7 +170,13 @@ def close_report(report_id):
                             closure_comment = ?
                         WHERE id = ?
                     """, (filename, file_blob, closure_comment, report_id))
-                flash("✅ Report closed successfully with closure comment.")
+    
+                    if cursor.rowcount == 0:
+                        flash("❌ ERROR: Report not found or update failed.")
+                        print("[ERROR] Closure update failed for report ID:", report_id)
+                    else:
+                        flash("✅ Report closed successfully with closure comment.")
+                        print("[SUCCESS] Closure update successful for report ID:", report_id)
         else:
             flash("⚠️ Please upload a valid file.")
 
