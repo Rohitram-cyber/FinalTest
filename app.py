@@ -147,36 +147,36 @@ def close_report(report_id):
         closure_comment = request.form.get("closure_comment", "").strip()
 
         if file and allowed_file(file.filename):
-    filename = secure_filename(file.filename)
-    file_blob = file.read()
+            filename = secure_filename(file.filename)
+            file_blob = file.read()
 
-    print(f"[DEBUG] Closing report ID: {report_id}")
-    print(f"[DEBUG] Closure Filename: {filename}")
+            print(f"[DEBUG] Closing report ID: {report_id}")
+            print(f"[DEBUG] Closure Filename: {filename}")
 
-    if file_blob:
-        print(f"[DEBUG] File Size: {len(file_blob)}")
-    else:
-        print("[ERROR] file_blob is None (Upload Failed)")
+            if file_blob:
+                print(f"[DEBUG] File Size: {len(file_blob)}")
+            else:
+                print("[ERROR] file_blob is None (Upload Failed)")
 
-    print(f"[DEBUG] Closure Comment: {closure_comment}")
+            print(f"[DEBUG] Closure Comment: {closure_comment}")
 
-    if not file_blob:
-        flash("⚠️ Closure file is empty or could not be read.")
-        return redirect(url_for("show_reports"))
+            if not file_blob:
+                flash("⚠️ Closure file is empty or could not be read.")
+                return redirect(url_for("show_reports"))
 
-    with sqlite3.connect("reports.db") as conn:
-        conn.execute("""
-            UPDATE reports SET
-                status = 'Closed',
-                closure_filename = ?,
-                closure_blob = ?,
-                closure_comment = ?
-            WHERE id = ?
-        """, (filename, file_blob, closure_comment, report_id))
-    flash("✅ Report closed successfully with closure comment.")
-else:
-    flash("⚠️ Please upload a valid file.")
-    
+            with sqlite3.connect("reports.db") as conn:
+                conn.execute("""
+                    UPDATE reports SET
+                        status = 'Closed',
+                        closure_filename = ?,
+                        closure_blob = ?,
+                        closure_comment = ?
+                    WHERE id = ?
+                """, (filename, file_blob, closure_comment, report_id))
+            flash("✅ Report closed successfully with closure comment.")
+        else:
+            flash("⚠️ Please upload a valid file.")
+        
         return redirect(url_for("show_reports"))
 
     return '''
